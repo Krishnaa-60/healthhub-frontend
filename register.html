@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0L95.1 19.5V56.2C95.1 82 75.8 100 50 100C24.2 100 4.9 82 4.9 56.2V19.5L50 0Z' fill='%2327C690'/%3E%3Cpath d='M50 83.3C50 83.3 68.8 70.8 68.8 56.2V33.2L50 25L31.2 33.2V56.2C31.2 70.8 50 83.3 50 83.3Z' fill='white'/%3E%3Cpath d='M55.2 46.9H51V42.7C51 42.1 50.5 41.7 50 41.7C49.5 41.7 49 42.1 49 42.7V46.9H44.8C44.3 46.9 43.8 47.3 43.8 47.9C43.8 48.5 44.3 48.9 44.8 48.9H49V53.1C49 53.7 49.5 54.1 50 54.1C50.5 54.1 51 53.7 51 53.1V48.9H55.2C55.7 48.9 56.2 48.5 56.2 47.9C56.2 47.3 55.7 46.9 55.2 46.9Z' fill='%2327C690'/%3E%3C/svg%3E">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - Healthub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary-green': '#27C690',
+              'primary-green-dark': '#21A87A',
+              'brand-blue': '#1E90FF',
+              'brand-purple': '#8A2BE2',
+              'accent-lime': '#C4F442',
+              'accent-blue': '#67D2FF',
+              'light-green': '#F1FBF7',
+              'light-gray-bg': '#F8F9FA',
+              'input-bg': '#EBF4FF',
+              'login-input-bg': '#E6F7F5',
+              'role-switcher-bg': '#E6F7F5',
+              'dark-bg': '#0F1A2E',
+              'dark-card': '#172135',
+              'dark-accent': '#31D0AA',
+              'dark-text': '#E0EFFF',
+              'dark-subtext': '#8899B5',
+              // Gradient colors
+              'grad-lime-from': '#D4FC79',
+              'grad-lime-to': '#96E6A1',
+              'grad-blue-from': '#84fab0',
+              'grad-blue-to': '#8fd3f4',
+              'grad-purple-from': '#a18cd1',
+              'grad-purple-to': '#fbc2eb',
+              'grad-red-from': '#ff9a9e',
+              'grad-red-to': '#fecfef',
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.19.0"
+      }
+    }
+    </script>
+</head>
+<body class="bg-light-gray-bg min-h-screen flex flex-col">
+    <header class="w-full bg-white p-3 z-20 shadow-md">
+      <div class="container mx-auto flex justify-between items-center">
+        <a href="index.html" class="flex items-center space-x-2 cursor-pointer">
+          <svg class="w-10 h-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 0L95.1 19.5V56.2C95.1 82 75.8 100 50 100C24.2 100 4.9 82 4.9 56.2V19.5L50 0Z" fill="#27C690"/>
+            <path d="M50 83.3C50 83.3 68.8 70.8 68.8 56.2V33.2L50 25L31.2 33.2V56.2C31.2 70.8 50 83.3 50 83.3Z" fill="white"/>
+            <path d="M55.2 46.9H51V42.7C51 42.1 50.5 41.7 50 41.7C49.5 41.7 49 42.1 49 42.7V46.9H44.8C44.3 46.9 43.8 47.3 43.8 47.9C43.8 48.5 44.3 48.9 44.8 48.9H49V53.1C49 53.7 49.5 54.1 50 54.1C50.5 54.1 51 53.7 51 53.1V48.9H55.2C55.7 48.9 56.2 48.5 56.2 47.9C56.2 47.3 55.7 46.9 55.2 46.9Z" fill="#27C690"/>
+          </svg>
+          <span class="text-xl font-bold text-gray-800 tracking-wide">Health Hub</span>
+        </a>
+        <nav class="hidden md:flex items-center">
+          <a href="index.html" class="text-gray-600 hover:text-primary-green transition-colors duration-300 px-3 py-2 rounded-md text-sm font-semibold">Home</a>
+          <a href="about.html" class="text-gray-600 hover:text-primary-green transition-colors duration-300 px-3 py-2 rounded-md text-sm font-semibold">About us</a>
+          <a href="contact.html" class="text-gray-600 hover:text-primary-green transition-colors duration-300 px-3 py-2 rounded-md text-sm font-semibold">Contact us</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container mx-auto flex-grow flex items-center justify-center p-4">
+      <div class="w-full max-w-5xl">
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+          <div id="register-form-container">
+            <!-- Registration Form HTML will be injected here by JS -->
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="w-full bg-white p-2 text-center text-sm text-gray-800 font-semibold border-t border-gray-200">
+      Developed by Team 9
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>

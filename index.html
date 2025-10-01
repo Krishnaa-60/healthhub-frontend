@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/assets/toplogo.png">
+    <link rel="apple-touch-icon" href="/assets/toplogo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Healthhub - Your Personal Health Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Apply theme from localStorage before page load to prevent FOUC
+      if (localStorage.theme === 'dark') {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+
+      tailwind.config = {
+        darkMode: 'class', // Enable class-based dark mode
+        theme: {
+          extend: {
+            colors: {
+              'primary-green': '#27C690',
+              'primary-green-dark': '#21A87A',
+              'brand-blue': '#1E90FF',
+              'brand-purple': '#8A2BE2',
+              'accent-lime': '#C4F442',
+              'accent-blue': '#67D2FF',
+              'light-green': '#F1FBF7',
+              'light-gray-bg': '#F8F9FA',
+              'input-bg': '#EBF4FF',
+              'login-input-bg': '#E6F7F5',
+              'role-switcher-bg': '#E6F7F5',
+              'dark-bg': '#0F1A2E',
+              'dark-card': '#172135',
+              'dark-accent': '#31D0AA',
+              'dark-text': '#E0EFFF',
+              'dark-subtext': '#BCCCDC', // Increased contrast further
+              'dark-border': '#334155',
+              'dark-placeholder': '#7A8C99', // Custom placeholder color
+              'grad-lime-from': '#D4FC79',
+              'grad-lime-to': '#96E6A1',
+              'grad-blue-from': '#84fab0',
+              'grad-blue-to': '#8fd3f4',
+              'grad-purple-from': '#a18cd1',
+              'grad-purple-to': '#fbc2eb',
+              'grad-red-from': '#ff9a9e',
+              'grad-red-to': '#fecfef',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @keyframes splash-effect {
+        0% {
+          transform: scale(1.05);
+          opacity: 1;
+        }
+        80% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0;
+        }
+      }
+      .splash-animation {
+        animation: splash-effect 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+    </style>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.21.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "express": "https://aistudiocdn.com/express@^5.1.0",
+    "cors": "https://aistudiocdn.com/cors@^2.8.5",
+    "mongoose": "https://aistudiocdn.com/mongoose@^8.18.2",
+    "dotenv": "https://aistudiocdn.com/dotenv@^17.2.2",
+    "cloudinary": "https://aistudiocdn.com/cloudinary@^2.7.0",
+    "bcryptjs": "https://aistudiocdn.com/bcryptjs@^3.0.2",
+    "nodemailer": "https://aistudiocdn.com/nodemailer@^7.0.6",
+    "crypto": "https://aistudiocdn.com/crypto@^1.0.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-light-gray-bg dark:bg-dark-bg">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>

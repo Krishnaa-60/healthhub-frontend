@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Healthub",
+  "description": "A personal healthcare management system that provides a secure login and registration portal for patients, doctors, and administrators.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
