@@ -1,8 +1,7 @@
 import { User, UserRole, MedicalRecord, Communication, ContactMessage } from '../types';
 
 // @ts-ignore - Vite env variables
-const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || 'http://localhost:5000/api';
-
+const API_BASE_URL = 'https://healthhub-backend-hhrzig6wo-krishnas-projects-5654f489.vercel.app/api';
 // Helper function for API requests
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     try {
