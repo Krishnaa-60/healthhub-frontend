@@ -1,7 +1,10 @@
 import { User, UserRole, MedicalRecord, Communication, ContactMessage } from '../types';
 
-// @ts-ignore - Vite env variables
-const API_BASE_URL = 'https://healthhub-backend-hhrzig6wo-krishnas-projects-5654f489.vercel.app/api';
+// Determine API URL based on environment
+const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api'
+  : 'https://healthhub-backend-hhrzig6wo-krishnas-projects-5654f489.vercel.app/api';
+
 // Helper function for API requests
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     try {
