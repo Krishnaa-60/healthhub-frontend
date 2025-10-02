@@ -19,7 +19,7 @@ const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ activeView, setActiveView
   ];
 
   return (
-    <aside className="w-64 bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm p-4 border-r border-gray-200/80 dark:border-dark-subtext/20 flex flex-col flex-shrink-0">
+    <aside className="hidden lg:flex w-56 xl:w-64 bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm p-3 xl:p-4 border-r border-gray-200/80 dark:border-dark-subtext/20 flex-col flex-shrink-0">
       <div className="text-gray-500 dark:text-dark-subtext text-xs font-semibold uppercase tracking-wider mb-3 px-2">
         Menu
       </div>
@@ -28,15 +28,15 @@ const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ activeView, setActiveView
           <button
             key={item.id}
             onClick={() => setActiveView(item.id as DoctorView)}
-            className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 transform hover:translate-x-1 ${
+            className={`flex items-center space-x-3 px-3 xl:px-4 py-2.5 xl:py-3 rounded-lg text-xs xl:text-sm font-semibold transition-all duration-200 transform hover:translate-x-1 ${
               activeView === item.id
                 ? 'bg-brand-blue text-white shadow-lg'
                 : 'text-gray-600 dark:text-dark-subtext hover:bg-light-green dark:hover:bg-dark-bg'
             }`}
             aria-current={activeView === item.id}
           >
-            <item.icon className="w-5 h-5" />
-            <span>{item.label}</span>
+            <item.icon className="w-4 h-4 xl:w-5 xl:h-5" />
+            <span className="truncate">{item.label}</span>
           </button>
         ))}
       </nav>

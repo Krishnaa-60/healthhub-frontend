@@ -111,35 +111,35 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ doctor: initialDoctor
 
   return (
     <div className="w-full h-screen bg-light-gray-bg dark:bg-dark-bg text-gray-800 dark:text-dark-text flex flex-col">
-      <header className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm shadow-lg p-3 flex justify-between items-center flex-shrink-0 z-20 border-b border-gray-200/80 dark:border-dark-subtext/20">
-        <div className="flex items-center space-x-2">
-          <LogoIcon className="w-10 h-10" />
-          <span className="text-xl font-bold tracking-wider">Healthhub Doctor</span>
+      <header className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm shadow-lg p-2 sm:p-3 flex justify-between items-center flex-shrink-0 z-20 border-b border-gray-200/80 dark:border-dark-subtext/20">
+        <div className="flex items-center space-x-1 sm:space-x-2">
+          <LogoIcon className="w-8 h-8 sm:w-10 sm:h-10" />
+          <span className="text-base sm:text-xl font-bold tracking-wider">Healthhub Doctor</span>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
            <button 
               onClick={handleAvatarClick}
-              className="relative w-10 h-10 rounded-full group bg-gray-200 dark:bg-dark-bg flex items-center justify-center cursor-pointer ring-2 ring-offset-2 ring-offset-white dark:ring-offset-dark-card ring-brand-blue"
+              className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full group bg-gray-200 dark:bg-dark-bg flex items-center justify-center cursor-pointer ring-2 ring-offset-2 ring-offset-white dark:ring-offset-dark-card ring-brand-blue"
               title="Change profile picture"
           >
               {isUploading ? (
-                  <SpinnerIcon className="w-6 h-6 text-white"/>
+                  <SpinnerIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white"/>
               ) : doctor.avatar ? (
                   <img src={doctor.avatar} alt="Doctor Avatar" className="w-full h-full rounded-full object-cover" />
               ) : (
-                  <UserPlaceholderIcon className="w-6 h-6 text-gray-500 dark:text-dark-subtext" />
+                  <UserPlaceholderIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 dark:text-dark-subtext" />
               )}
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-full flex items-center justify-center transition-opacity">
-                  {!isUploading && <UploadIcon className="w-5 h-5 text-white opacity-0 group-hover:opacity-100" />}
+                  {!isUploading && <UploadIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white opacity-0 group-hover:opacity-100" />}
               </div>
           </button>
-          <div className="text-right">
+          <div className="text-right hidden md:block">
             <div className="font-semibold text-sm">{doctor.name}</div>
             <div className="text-xs text-gray-500 dark:text-dark-subtext">{doctor.specialization || 'Doctor'}</div>
           </div>
           <button
             onClick={onLogout}
-            className="text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-semibold py-2 px-3 rounded-md transition-colors"
+            className="text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-semibold py-1.5 sm:py-2 px-2 sm:px-3 rounded-md transition-colors"
             aria-label="Logout"
           >
             Logout
@@ -149,7 +149,7 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ doctor: initialDoctor
 
       <div className="flex flex-grow overflow-hidden">
         <DoctorSidebar activeView={activeView} setActiveView={setActiveView} />
-        <main className="flex-grow p-6 md:p-8 overflow-y-auto">
+        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 overflow-y-auto">
           {renderContent()}
         </main>
       </div>

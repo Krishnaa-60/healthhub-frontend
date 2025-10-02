@@ -25,8 +25,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ authMode, setAuthMode, onLoginSucce
   };
 
   return (
-    <div className={`w-full ${authMode === AuthMode.REGISTER ? 'max-w-5xl' : 'max-w-md'} transition-all duration-500`}>
-        <div className="bg-white dark:bg-dark-card rounded-2xl shadow-xl p-8 transition-all duration-500 border border-gray-200 dark:border-dark-subtext/20">
+    <div className={`w-full px-4 ${authMode === AuthMode.REGISTER ? 'max-w-5xl' : 'max-w-md'} transition-all duration-500`}>
+        <div className="bg-white dark:bg-dark-card rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 transition-all duration-500 border border-gray-200 dark:border-dark-subtext/20">
             {renderForm()}
         </div>
     </div>
