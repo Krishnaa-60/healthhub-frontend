@@ -3,7 +3,7 @@ import { User, UserRole, MedicalRecord, Communication, ContactMessage } from '..
 // Determine API URL based on environment
 const API_BASE_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:5000/api'
-  : 'https://healthhub-backend1.onrender.com/api';
+  : 'https://healthhub-backend-wlhx.onrender.com/api';
 
 // Helper function for API requests
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
