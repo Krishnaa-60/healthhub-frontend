@@ -9,6 +9,7 @@ import UserDetailView from '../components/admin/UserDetailView'; // Reusing admi
 import SendMessageModal from '../components/doctor/SendMessageModal';
 import { getUserById, updateUser } from '../services/db';
 import DoctorAppointmentsView from '../components/doctor/DoctorAppointmentsView';
+import DoctorProfileView from '../components/doctor/DoctorProfileView';
 import Toast from '../components/Toast';
 import UploadIcon from '../components/icons/UploadIcon';
 import SpinnerIcon from '../components/icons/SpinnerIcon';
@@ -19,7 +20,7 @@ interface DoctorDashboardProps {
   onLogout: () => void;
 }
 
-export type DoctorView = 'dashboard' | 'patients' | 'communications' | 'appointments';
+export type DoctorView = 'dashboard' | 'patients' | 'communications' | 'appointments' | 'profile';
 
 const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ doctor: initialDoctor, onLogout }) => {
   const [doctor, setDoctor] = useState<User>(initialDoctor);
@@ -93,6 +94,8 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ doctor: initialDoctor
         return <CommunicationsView doctor={doctor} onReplyToPatient={handleReplyToPatient} />;
       case 'appointments':
         return <DoctorAppointmentsView doctor={doctor} onUserUpdate={handleUserUpdate} />;
+      case 'profile':
+        return <DoctorProfileView doctor={doctor} onDoctorUpdate={handleUserUpdate} setToastMessage={setToastMessage} />;
       case 'dashboard':
       default:
         return <DoctorDashboardHome doctor={doctor} setActiveView={setActiveView} />;

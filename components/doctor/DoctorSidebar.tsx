@@ -3,6 +3,7 @@ import HomeIcon from '../icons/HomeIcon';
 import UsersIcon from '../icons/UsersIcon';
 import MailIcon from '../icons/MailIcon';
 import CalendarIcon from '../icons/CalendarIcon';
+import PersonIcon from '../icons/PersonIcon';
 import { DoctorView } from '../../pages/DoctorDashboard';
 
 interface DoctorSidebarProps {
@@ -13,6 +14,7 @@ interface DoctorSidebarProps {
 const DoctorSidebar: React.FC<DoctorSidebarProps> = ({ activeView, setActiveView }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: HomeIcon },
+    { id: 'profile', label: 'My Profile', icon: PersonIcon },
     { id: 'patients', label: 'My Patients', icon: UsersIcon },
     { id: 'appointments', label: 'Appointments', icon: CalendarIcon },
     { id: 'communications', label: 'Inbox', icon: MailIcon },
