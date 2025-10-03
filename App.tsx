@@ -49,33 +49,48 @@ const App: React.FC = () => {
         setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
     };
 
-
     // Check for logged in user on initial load
     useEffect(() => {
         const checkLoggedInUser = async () => {
-            const loggedInUserId = sessionStorage.getItem('loggedInUser');
-            if (loggedInUserId) {
+            const storedHealthId = sessionStorage.getItem('loggedInUser');
+            if (storedHealthId) {
                 try {
-                    const userData = await getUserById(loggedInUserId);
-                    setUser(userData);
+                    const fetchedUser = await getUserById(storedHealthId);
+                    setUser(fetchedUser);
                 } catch (error) {
-                    console.error("Failed to fetch user session:", error);
+                    console.error('Failed to fetch user:', error);
                     sessionStorage.removeItem('loggedInUser');
                 }
             }
-            setIsLoading(false);
         };
         // Run this check only after splash screen is gone
         if (!isSplashing) {
-            checkLoggedInUser();
+            checkLoggedInUser().finally(() => setIsLoading(false));
         }
     }, [isSplashing]);
+
+    // Handle back button - prevent app from closing when user is logged in
+    useEffect(() => {
+        if (!user) return;
+
+        // Push initial state when user logs in
+        window.history.pushState({ appState: 'dashboard' }, '', window.location.href);
+
+        const handlePopState = (event: PopStateEvent) => {
+            // Prevent going back to login/previous pages
+            event.preventDefault();
+            window.history.pushState({ appState: 'dashboard' }, '', window.location.href);
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [user]);
 
     const handleLoginSuccess = (loggedInUser: User) => {
         sessionStorage.setItem('loggedInUser', loggedInUser.healthId);
         setUser(loggedInUser);
-        // Replace the current history state to prevent the back button from returning to the login page.
-        window.history.replaceState({ appState: 'dashboard' }, '', window.location.href);
+        // Push a new state so back button works properly
+        window.history.pushState({ appState: 'dashboard' }, '', window.location.href);
     };
 
     const handleLogout = () => {
@@ -83,6 +98,8 @@ const App: React.FC = () => {
         setUser(null);
         setView('auth');
         setAuthMode(AuthMode.LOGIN);
+        // Clear history state
+        window.history.replaceState(null, '', window.location.href);
     };
     
     const handleUserUpdate = (updatedUser: User) => {

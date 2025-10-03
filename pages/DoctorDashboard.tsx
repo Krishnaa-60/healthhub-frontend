@@ -14,6 +14,11 @@ import Toast from '../components/Toast';
 import UploadIcon from '../components/icons/UploadIcon';
 import SpinnerIcon from '../components/icons/SpinnerIcon';
 import UserPlaceholderIcon from '../components/icons/UserPlaceholderIcon';
+import HomeIcon from '../components/icons/HomeIcon';
+import PersonIcon from '../components/icons/PersonIcon';
+import UsersIcon from '../components/icons/UsersIcon';
+import CalendarIcon from '../components/icons/CalendarIcon';
+import MailIcon from '../components/icons/MailIcon';
 
 interface DoctorDashboardProps {
   doctor: User;
@@ -152,7 +157,74 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ doctor: initialDoctor
 
       <div className="flex flex-grow overflow-hidden">
         <DoctorSidebar activeView={activeView} setActiveView={setActiveView} />
-        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 overflow-y-auto">
+        
+        {/* Mobile Bottom Navigation */}
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-dark-card/95 backdrop-blur-sm border-t border-gray-200 dark:border-dark-subtext/20 z-30 safe-area-inset-bottom">
+          <div className="grid grid-cols-5 gap-1 px-2 py-2">
+            <button
+              onClick={() => setActiveView('dashboard')}
+              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+                activeView === 'dashboard' 
+                ? 'text-brand-blue dark:text-dark-accent bg-blue-50 dark:bg-dark-accent/10' 
+                : 'text-gray-600 dark:text-dark-subtext'
+              }`}
+              aria-current={activeView === 'dashboard'}
+            >
+              <HomeIcon className="w-5 h-5" />
+              <span className="text-[9px] font-medium mt-0.5">Home</span>
+            </button>
+            <button
+              onClick={() => setActiveView('profile')}
+              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+                activeView === 'profile' 
+                ? 'text-brand-blue dark:text-dark-accent bg-blue-50 dark:bg-dark-accent/10' 
+                : 'text-gray-600 dark:text-dark-subtext'
+              }`}
+              aria-current={activeView === 'profile'}
+            >
+              <PersonIcon className="w-5 h-5" />
+              <span className="text-[9px] font-medium mt-0.5">Profile</span>
+            </button>
+            <button
+              onClick={() => setActiveView('patients')}
+              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+                activeView === 'patients' 
+                ? 'text-brand-blue dark:text-dark-accent bg-blue-50 dark:bg-dark-accent/10' 
+                : 'text-gray-600 dark:text-dark-subtext'
+              }`}
+              aria-current={activeView === 'patients'}
+            >
+              <UsersIcon className="w-5 h-5" />
+              <span className="text-[9px] font-medium mt-0.5">Patients</span>
+            </button>
+            <button
+              onClick={() => setActiveView('appointments')}
+              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+                activeView === 'appointments' 
+                ? 'text-brand-blue dark:text-dark-accent bg-blue-50 dark:bg-dark-accent/10' 
+                : 'text-gray-600 dark:text-dark-subtext'
+              }`}
+              aria-current={activeView === 'appointments'}
+            >
+              <CalendarIcon className="w-5 h-5" />
+              <span className="text-[9px] font-medium mt-0.5">Appts</span>
+            </button>
+            <button
+              onClick={() => setActiveView('communications')}
+              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+                activeView === 'communications' 
+                ? 'text-brand-blue dark:text-dark-accent bg-blue-50 dark:bg-dark-accent/10' 
+                : 'text-gray-600 dark:text-dark-subtext'
+              }`}
+              aria-current={activeView === 'communications'}
+            >
+              <MailIcon className="w-5 h-5" />
+              <span className="text-[9px] font-medium mt-0.5">Inbox</span>
+            </button>
+          </div>
+        </nav>
+
+        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-20 lg:pb-8 overflow-y-auto">
           {renderContent()}
         </main>
       </div>

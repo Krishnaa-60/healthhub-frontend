@@ -416,22 +416,22 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                         </nav>
                     </aside>
 
-                    {/* Mobile Bottom Navigation */}
-                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-dark-card/95 backdrop-blur-sm border-t border-gray-200 dark:border-dark-subtext/20 z-30 safe-area-inset-bottom">
-                        <div className="flex justify-around items-center px-2 py-2">
-                            {navItems.slice(0, 5).map(item => (
+                    {/* Mobile Bottom Navigation - Scrollable to show all items */}
+                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-dark-card/95 backdrop-blur-sm border-t border-gray-200 dark:border-dark-subtext/20 z-30 safe-area-inset-bottom overflow-x-auto">
+                        <div className="flex justify-start min-w-max px-2 py-2 gap-1">
+                            {navItems.map(item => (
                                 <button
                                     key={item.id}
                                     onClick={() => setActiveView(item.id as DashboardView)}
-                                    className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all ${
+                                    className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all min-w-[70px] ${
                                         activeView === item.id 
-                                        ? 'text-primary-green dark:text-dark-accent' 
+                                        ? 'text-primary-green dark:text-dark-accent bg-green-50 dark:bg-dark-accent/10' 
                                         : 'text-gray-600 dark:text-dark-subtext'
                                     }`}
                                     aria-current={activeView === item.id}
                                 >
-                                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                                    <span className="text-[10px] sm:text-xs font-medium mt-0.5">{item.label.split(' ')[0]}</span>
+                                    <item.icon className="w-5 h-5" />
+                                    <span className="text-[9px] font-medium mt-0.5 text-center whitespace-nowrap">{item.label}</span>
                                 </button>
                             ))}
                         </div>
