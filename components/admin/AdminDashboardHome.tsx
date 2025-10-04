@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, UserRole } from '../../types';
+import { User, UserRole, Appointment } from '../../types';
 import { getAllUsers } from '../../services/db';
 import AdminStatCard from './AdminStatCard';
 import UserBarChart from './charts/UserBarChart';
@@ -9,15 +9,23 @@ import DoctorIcon from '../icons/DoctorIcon';
 import UsersIcon from '../icons/UsersIcon';
 import AnalyticsIcon from '../icons/AnalyticsIcon';
 import { AdminView } from '../../pages/AdminDashboard';
+import AppointmentsTodayModal from './AppointmentsTodayModal';
 
 interface AdminDashboardHomeProps {
     setActiveView: (view: AdminView) => void;
+}
+
+interface AppointmentWithUser {
+    appointment: Appointment;
+    user: User;
 }
 
 const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({ setActiveView }) => {
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [showAppointmentsModal, setShowAppointmentsModal] = useState(false);
+    const [todayAppointments, setTodayAppointments] = useState<AppointmentWithUser[]>([]);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -39,13 +47,27 @@ const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({ setActiveView }
     
     // Calculate appointments today
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-    const appointmentsToday = users.reduce((count, user) => {
+    const appointmentsWithUsers: AppointmentWithUser[] = [];
+    
+    users.forEach(user => {
         if (user.appointments) {
-            const todayAppointments = user.appointments.filter(apt => apt.date === today);
-            return count + todayAppointments.length;
+            user.appointments
+                .filter(apt => apt.date === today)
+                .forEach(apt => {
+                    appointmentsWithUsers.push({ appointment: apt, user });
+                });
         }
-        return count;
-    }, 0);
+    });
+    
+    // Sort by time
+    appointmentsWithUsers.sort((a, b) => a.appointment.time.localeCompare(b.appointment.time));
+    
+    const appointmentsToday = appointmentsWithUsers.length;
+    
+    const handleAppointmentsTodayClick = () => {
+        setTodayAppointments(appointmentsWithUsers);
+        setShowAppointmentsModal(true);
+    };
     
     const recentRegistrations = [...users]
         .filter(u => u.role !== UserRole.ADMIN)
@@ -81,7 +103,7 @@ const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({ setActiveView }
                 <AdminStatCard icon={UsersIcon} title="Total Users" value={totalUsers} onClick={() => setActiveView('users')} />
                 <AdminStatCard icon={PersonIcon} title="Total Patients" value={totalPatients} onClick={() => setActiveView('patients')} />
                 <AdminStatCard icon={DoctorIcon} title="Total Doctors" value={totalDoctors} onClick={() => setActiveView('doctors')} />
-                <AdminStatCard icon={AnalyticsIcon} title="Appointments Today" value={appointmentsToday} />
+                <AdminStatCard icon={AnalyticsIcon} title="Appointments Today" value={appointmentsToday} onClick={handleAppointmentsTodayClick} />
             </div>
 
             {/* Charts */}
@@ -127,6 +149,12 @@ const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({ setActiveView }
                 </div>
             </div>
 
+            {showAppointmentsModal && (
+                <AppointmentsTodayModal
+                    appointments={todayAppointments}
+                    onClose={() => setShowAppointmentsModal(false)}
+                />
+            )}
         </div>
     );
 };
