@@ -36,6 +36,17 @@ const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({ setActiveView }
     const totalUsers = users.length;
     const totalPatients = users.filter(u => u.role === UserRole.PATIENT).length;
     const totalDoctors = users.filter(u => u.role === UserRole.DOCTOR).length;
+    
+    // Calculate appointments today
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const appointmentsToday = users.reduce((count, user) => {
+        if (user.appointments) {
+            const todayAppointments = user.appointments.filter(apt => apt.date === today);
+            return count + todayAppointments.length;
+        }
+        return count;
+    }, 0);
+    
     const recentRegistrations = [...users]
         .filter(u => u.role !== UserRole.ADMIN)
         .sort((a, b) => {
@@ -70,7 +81,7 @@ const AdminDashboardHome: React.FC<AdminDashboardHomeProps> = ({ setActiveView }
                 <AdminStatCard icon={UsersIcon} title="Total Users" value={totalUsers} onClick={() => setActiveView('users')} />
                 <AdminStatCard icon={PersonIcon} title="Total Patients" value={totalPatients} onClick={() => setActiveView('patients')} />
                 <AdminStatCard icon={DoctorIcon} title="Total Doctors" value={totalDoctors} onClick={() => setActiveView('doctors')} />
-                <AdminStatCard icon={AnalyticsIcon} title="Appointments Today" value={0} /> {/* Placeholder */}
+                <AdminStatCard icon={AnalyticsIcon} title="Appointments Today" value={appointmentsToday} />
             </div>
 
             {/* Charts */}
