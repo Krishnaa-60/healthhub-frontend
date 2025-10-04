@@ -14,6 +14,13 @@ interface DoctorDashboardHomeProps {
 const DoctorDashboardHome: React.FC<DoctorDashboardHomeProps> = ({ doctor, setActiveView }) => {
     const totalPatients = doctor.patients?.length || 0;
     const recentCommunications = (doctor.communications || []).slice(0, 3);
+    
+    // Calculate today's appointments
+    const appointmentsToday = (() => {
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+        return (doctor.appointments || []).filter(appt => appt.date === todayStr).length;
+    })();
 
     return (
         <div className="space-y-8">
@@ -25,7 +32,7 @@ const DoctorDashboardHome: React.FC<DoctorDashboardHomeProps> = ({ doctor, setAc
             {/* Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <AdminStatCard icon={UsersIcon} title="Total Patients" value={totalPatients} onClick={() => setActiveView('patients')} />
-                <AdminStatCard icon={CalendarIcon} title="Appointments Today" value={0} /> {/* Placeholder */}
+                <AdminStatCard icon={CalendarIcon} title="Appointments Today" value={appointmentsToday} onClick={() => setActiveView('appointments')} />
             </div>
             
              {/* Recent Communications */}

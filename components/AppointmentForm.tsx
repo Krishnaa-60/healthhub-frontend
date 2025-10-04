@@ -18,18 +18,45 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ isOpen, onClose, onSa
         doctorName: '',
     });
     const [error, setError] = useState('');
+    const [timeInput, setTimeInput] = useState('');
+    const [ampm, setAmpm] = useState<'AM' | 'PM'>('AM');
+
+    // Convert 24-hour time to 12-hour format
+    const convertTo12Hour = (time24: string) => {
+        if (!time24) return { time12: '', ampm: 'AM' as 'AM' | 'PM' };
+        const [hours, minutes] = time24.split(':');
+        const h = parseInt(hours, 10);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        return { time12: `${h12.toString().padStart(2, '0')}:${minutes}`, ampm };
+    };
+
+    // Convert 12-hour time to 24-hour format
+    const convertTo24Hour = (time12: string, ampm: 'AM' | 'PM') => {
+        if (!time12) return '';
+        const [hours, minutes] = time12.split(':');
+        let h = parseInt(hours, 10);
+        if (ampm === 'PM' && h !== 12) h += 12;
+        if (ampm === 'AM' && h === 12) h = 0;
+        return `${h.toString().padStart(2, '0')}:${minutes}`;
+    };
 
     useEffect(() => {
         if (appointmentToEdit) {
+            const { time12, ampm: period } = convertTo12Hour(appointmentToEdit.time);
             setFormData({
                 date: appointmentToEdit.date,
                 time: appointmentToEdit.time,
                 hospitalName: appointmentToEdit.hospitalName,
                 doctorName: appointmentToEdit.doctorName,
             });
+            setTimeInput(time12);
+            setAmpm(period);
         } else {
             // Reset form when opening for a new appointment
             setFormData({ date: '', time: '', hospitalName: '', doctorName: '' });
+            setTimeInput('');
+            setAmpm('AM');
         }
         setError('');
     }, [appointmentToEdit, isOpen]);
@@ -38,6 +65,21 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ isOpen, onClose, onSa
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setTimeInput(value);
+        const time24 = convertTo24Hour(value, ampm);
+        setFormData({ ...formData, time: time24 });
+    };
+
+    const handleAmPmChange = (period: 'AM' | 'PM') => {
+        setAmpm(period);
+        if (timeInput) {
+            const time24 = convertTo24Hour(timeInput, period);
+            setFormData({ ...formData, time: time24 });
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -82,7 +124,39 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ isOpen, onClose, onSa
                                 </div>
                                 <div>
                                     <label htmlFor="time" className={labelStyle}>Time</label>
-                                    <input type="time" name="time" value={formData.time} onChange={handleChange} className={inputStyle} required />
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="time" 
+                                            value={timeInput} 
+                                            onChange={handleTimeChange} 
+                                            className={`${inputStyle} flex-1`} 
+                                            required 
+                                        />
+                                        <div className="flex rounded-md overflow-hidden border border-gray-300 dark:border-dark-subtext/20">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAmPmChange('AM')}
+                                                className={`px-3 py-2 text-sm font-medium transition-colors ${
+                                                    ampm === 'AM' 
+                                                        ? 'bg-primary-green text-white dark:bg-dark-accent' 
+                                                        : 'bg-white dark:bg-dark-bg text-gray-700 dark:text-dark-text hover:bg-gray-50 dark:hover:bg-dark-card'
+                                                }`}
+                                            >
+                                                AM
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAmPmChange('PM')}
+                                                className={`px-3 py-2 text-sm font-medium transition-colors ${
+                                                    ampm === 'PM' 
+                                                        ? 'bg-primary-green text-white dark:bg-dark-accent' 
+                                                        : 'bg-white dark:bg-dark-bg text-gray-700 dark:text-dark-text hover:bg-gray-50 dark:hover:bg-dark-card'
+                                                }`}
+                                            >
+                                                PM
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </fieldset>
