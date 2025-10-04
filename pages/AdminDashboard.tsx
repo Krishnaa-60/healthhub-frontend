@@ -129,73 +129,97 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin: initialAdmin, on
       <div className="flex flex-grow overflow-hidden">
         <AdminSidebar activeView={activeView} setActiveView={setActiveView} />
         
-        {/* Mobile Bottom Navigation */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-dark-card/95 backdrop-blur-sm border-t border-gray-200 dark:border-dark-subtext/20 z-30 safe-area-inset-bottom">
-          <div className="grid grid-cols-3 gap-1 px-2 py-2">
+        {/* Mobile Bottom Navigation - Enhanced UI */}
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white/98 via-green-50/98 to-white/98 dark:from-dark-card/98 dark:via-dark-bg/98 dark:to-dark-card/98 backdrop-blur-md border-t-2 border-primary-green/20 dark:border-dark-accent/30 z-30 safe-area-inset-bottom shadow-2xl">
+          <div className="grid grid-cols-3 gap-2 px-3 py-3">
             <button
               onClick={() => setActiveView('dashboard')}
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+              className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                 activeView === 'dashboard' 
-                ? 'text-primary-green dark:text-dark-accent bg-green-50 dark:bg-dark-accent/10' 
-                : 'text-gray-600 dark:text-dark-subtext'
+                ? 'text-white dark:text-dark-bg bg-gradient-to-br from-primary-green to-teal-500 dark:from-dark-accent dark:to-teal-400 shadow-lg scale-105' 
+                : 'text-gray-700 dark:text-dark-subtext bg-white/60 dark:bg-dark-bg/60 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
               }`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-              <span className="text-[9px] font-medium mt-0.5">Dashboard</span>
+              <svg className={`w-6 h-6 mb-1 ${
+                activeView === 'dashboard' ? 'drop-shadow-md' : ''
+              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+              <span className={`text-[10px] font-semibold ${
+                activeView === 'dashboard' ? 'tracking-wide' : ''
+              }`}>Dashboard</span>
             </button>
             <button
               onClick={() => setActiveView('users')}
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+              className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                 activeView === 'users' 
-                ? 'text-primary-green dark:text-dark-accent bg-green-50 dark:bg-dark-accent/10' 
-                : 'text-gray-600 dark:text-dark-subtext'
+                ? 'text-white dark:text-dark-bg bg-gradient-to-br from-primary-green to-teal-500 dark:from-dark-accent dark:to-teal-400 shadow-lg scale-105' 
+                : 'text-gray-700 dark:text-dark-subtext bg-white/60 dark:bg-dark-bg/60 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
               }`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-              <span className="text-[9px] font-medium mt-0.5">Users</span>
+              <svg className={`w-6 h-6 mb-1 ${
+                activeView === 'users' ? 'drop-shadow-md' : ''
+              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              <span className={`text-[10px] font-semibold ${
+                activeView === 'users' ? 'tracking-wide' : ''
+              }`}>Users</span>
             </button>
             <button
               onClick={() => setActiveView('patients')}
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+              className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                 activeView === 'patients' 
-                ? 'text-primary-green dark:text-dark-accent bg-green-50 dark:bg-dark-accent/10' 
-                : 'text-gray-600 dark:text-dark-subtext'
+                ? 'text-white dark:text-dark-bg bg-gradient-to-br from-primary-green to-teal-500 dark:from-dark-accent dark:to-teal-400 shadow-lg scale-105' 
+                : 'text-gray-700 dark:text-dark-subtext bg-white/60 dark:bg-dark-bg/60 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
               }`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-              <span className="text-[9px] font-medium mt-0.5">Patients</span>
+              <svg className={`w-6 h-6 mb-1 ${
+                activeView === 'patients' ? 'drop-shadow-md' : ''
+              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              <span className={`text-[10px] font-semibold ${
+                activeView === 'patients' ? 'tracking-wide' : ''
+              }`}>Patients</span>
             </button>
             <button
               onClick={() => setActiveView('doctors')}
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+              className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                 activeView === 'doctors' 
-                ? 'text-primary-green dark:text-dark-accent bg-green-50 dark:bg-dark-accent/10' 
-                : 'text-gray-600 dark:text-dark-subtext'
+                ? 'text-white dark:text-dark-bg bg-gradient-to-br from-primary-green to-teal-500 dark:from-dark-accent dark:to-teal-400 shadow-lg scale-105' 
+                : 'text-gray-700 dark:text-dark-subtext bg-white/60 dark:bg-dark-bg/60 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
               }`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <span className="text-[9px] font-medium mt-0.5">Doctors</span>
+              <svg className={`w-6 h-6 mb-1 ${
+                activeView === 'doctors' ? 'drop-shadow-md' : ''
+              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span className={`text-[10px] font-semibold ${
+                activeView === 'doctors' ? 'tracking-wide' : ''
+              }`}>Doctors</span>
             </button>
             <button
               onClick={() => setActiveView('admins')}
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+              className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                 activeView === 'admins' 
-                ? 'text-primary-green dark:text-dark-accent bg-green-50 dark:bg-dark-accent/10' 
-                : 'text-gray-600 dark:text-dark-subtext'
+                ? 'text-white dark:text-dark-bg bg-gradient-to-br from-primary-green to-teal-500 dark:from-dark-accent dark:to-teal-400 shadow-lg scale-105' 
+                : 'text-gray-700 dark:text-dark-subtext bg-white/60 dark:bg-dark-bg/60 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
               }`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-              <span className="text-[9px] font-medium mt-0.5">Admins</span>
+              <svg className={`w-6 h-6 mb-1 ${
+                activeView === 'admins' ? 'drop-shadow-md' : ''
+              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              <span className={`text-[10px] font-semibold ${
+                activeView === 'admins' ? 'tracking-wide' : ''
+              }`}>Admins</span>
             </button>
             <button
               onClick={() => setActiveView('messages')}
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-all ${
+              className={`flex flex-col items-center justify-center px-2 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                 activeView === 'messages' 
-                ? 'text-primary-green dark:text-dark-accent bg-green-50 dark:bg-dark-accent/10' 
-                : 'text-gray-600 dark:text-dark-subtext'
+                ? 'text-white dark:text-dark-bg bg-gradient-to-br from-primary-green to-teal-500 dark:from-dark-accent dark:to-teal-400 shadow-lg scale-105' 
+                : 'text-gray-700 dark:text-dark-subtext bg-white/60 dark:bg-dark-bg/60 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
               }`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              <span className="text-[9px] font-medium mt-0.5">Inbox</span>
+              <svg className={`w-6 h-6 mb-1 ${
+                activeView === 'messages' ? 'drop-shadow-md' : ''
+              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              <span className={`text-[10px] font-semibold ${
+                activeView === 'messages' ? 'tracking-wide' : ''
+              }`}>Inbox</span>
             </button>
           </div>
         </nav>
 
-        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-20 lg:pb-8 overflow-y-auto">
+        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-24 lg:pb-8 overflow-y-auto">
           {renderContent()}
         </main>
       </div>

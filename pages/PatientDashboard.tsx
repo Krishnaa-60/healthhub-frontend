@@ -416,29 +416,33 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                         </nav>
                     </aside>
 
-                    {/* Mobile Bottom Navigation - Scrollable to show all items */}
-                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-dark-card/95 backdrop-blur-sm border-t border-gray-200 dark:border-dark-subtext/20 z-30 safe-area-inset-bottom overflow-x-auto">
-                        <div className="flex justify-start min-w-max px-2 py-2 gap-1">
+                    {/* Mobile Bottom Navigation - Enhanced UI */}
+                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white/98 via-green-50/98 to-white/98 dark:from-dark-card/98 dark:via-dark-bg/98 dark:to-dark-card/98 backdrop-blur-md border-t-2 border-primary-green/20 dark:border-dark-accent/30 z-30 safe-area-inset-bottom overflow-x-auto shadow-2xl">
+                        <div className="flex justify-start min-w-max px-3 py-3 gap-2">
                             {navItems.map(item => (
                                 <button
                                     key={item.id}
                                     onClick={() => setActiveView(item.id as DashboardView)}
-                                    className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all min-w-[70px] ${
+                                    className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-xl transition-all duration-300 min-w-[75px] transform hover:scale-105 ${
                                         activeView === item.id 
-                                        ? 'text-primary-green dark:text-dark-accent bg-green-50 dark:bg-dark-accent/10' 
-                                        : 'text-gray-600 dark:text-dark-subtext'
+                                        ? 'text-white dark:text-dark-bg bg-gradient-to-br from-primary-green to-teal-500 dark:from-dark-accent dark:to-teal-400 shadow-lg scale-105' 
+                                        : 'text-gray-700 dark:text-dark-subtext bg-white/60 dark:bg-dark-bg/60 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
                                     }`}
                                     aria-current={activeView === item.id}
                                 >
-                                    <item.icon className="w-5 h-5" />
-                                    <span className="text-[9px] font-medium mt-0.5 text-center whitespace-nowrap">{item.label}</span>
+                                    <item.icon className={`w-6 h-6 mb-1 ${
+                                        activeView === item.id ? 'drop-shadow-md' : ''
+                                    }`} />
+                                    <span className={`text-[10px] font-semibold text-center whitespace-nowrap ${
+                                        activeView === item.id ? 'tracking-wide' : ''
+                                    }`}>{item.label}</span>
                                 </button>
                             ))}
                         </div>
                     </nav>
 
                     {/* Main Content */}
-                    <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-20 lg:pb-8 overflow-y-auto relative bg-gradient-to-br from-light-green via-teal-50 to-blue-50 dark:bg-gradient-to-br dark:from-dark-bg dark:via-slate-900 dark:to-dark-card">
+                    <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-24 lg:pb-8 overflow-y-auto relative bg-gradient-to-br from-light-green via-teal-50 to-blue-50 dark:bg-gradient-to-br dark:from-dark-bg dark:via-slate-900 dark:to-dark-card">
                         {/* <DashboardBackground /> */}
                         <div className="relative z-10">
                             {renderContent()}
