@@ -58,28 +58,26 @@ const DoctorAppointmentCard: React.FC<DoctorAppointmentCardProps> = ({ appointme
             <DetailItem icon={<ClockIcon />}>{formattedTime}</DetailItem>
         </div>
       </div>
-      {(onEdit || onDelete) && (
-          <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-dark-subtext/10">
-            {onEdit && !isPast && (
-              <button
-                onClick={onEdit}
-                className="p-2 text-gray-500 dark:text-dark-subtext hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-dark-bg rounded-full transition-colors"
-                aria-label="Edit appointment"
-              >
-                <EditIcon className="w-5 h-5" />
-              </button>
-            )}
-            {onDelete && (
-              <button
-                onClick={onDelete}
-                className="p-2 text-gray-500 dark:text-dark-subtext hover:text-red-600 hover:bg-red-50 dark:hover:bg-dark-bg rounded-full transition-colors"
-                aria-label="Delete appointment"
-              >
-                <TrashIcon className="w-5 h-5" />
-              </button>
-            )}
-        </div>
-      )}
+      <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-dark-subtext/10">
+        {onEdit && !isPast && (
+          <button
+            onClick={onEdit}
+            className="p-2 text-gray-500 dark:text-dark-subtext hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-dark-bg rounded-full transition-colors"
+            aria-label="Edit appointment"
+          >
+            <EditIcon className="w-5 h-5" />
+          </button>
+        )}
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            className="p-2 text-gray-500 dark:text-dark-subtext hover:text-red-600 hover:bg-red-50 dark:hover:bg-dark-bg rounded-full transition-colors"
+            aria-label="Delete appointment"
+          >
+            <TrashIcon className="w-5 h-5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };
