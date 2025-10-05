@@ -20,14 +20,22 @@ const QRScanner: React.FC<QRScannerProps> = ({
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const qrRegionId = 'qr-reader-region';
+    const isInitializedRef = useRef(false);
 
     useEffect(() => {
-        if (isOpen) {
-            startCameraScanner();
+        if (isOpen && !isInitializedRef.current) {
+            isInitializedRef.current = true;
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                startCameraScanner();
+            }, 100);
         }
 
         return () => {
-            stopScanner();
+            if (!isOpen) {
+                stopScanner();
+                isInitializedRef.current = false;
+            }
         };
     }, [isOpen]);
 
@@ -35,41 +43,66 @@ const QRScanner: React.FC<QRScannerProps> = ({
         try {
             setError('');
             
-            if (!scannerRef.current) {
-                scannerRef.current = new Html5Qrcode(qrRegionId);
+            // Clear any existing instance
+            if (scannerRef.current) {
+                try {
+                    await scannerRef.current.stop();
+                    scannerRef.current.clear();
+                } catch (e) {
+                    console.log('Clearing previous scanner');
+                }
             }
+
+            // Create new instance
+            scannerRef.current = new Html5Qrcode(qrRegionId, { verbose: false });
 
             const config = {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.777778,
-                disableFlip: false
+                aspectRatio: 1.0
             };
 
-            await scannerRef.current.start(
-                { facingMode: { ideal: "environment" } },
-                config,
-                (decodedText) => {
-                    handleScanSuccess(decodedText);
-                },
-                (errorMessage) => {
-                    // Ignore scan errors (they happen continuously while scanning)
-                }
-            );
-            
-            setIsScanning(true);
-        } catch (err) {
+            // Get available cameras
+            const devices = await Html5Qrcode.getCameras();
+            if (devices && devices.length > 0) {
+                // Use back camera if available, otherwise use first camera
+                const backCamera = devices.find(device => 
+                    device.label.toLowerCase().includes('back') || 
+                    device.label.toLowerCase().includes('rear') ||
+                    device.label.toLowerCase().includes('environment')
+                );
+                const cameraId = backCamera ? backCamera.id : devices[0].id;
+
+                await scannerRef.current.start(
+                    cameraId,
+                    config,
+                    (decodedText) => {
+                        handleScanSuccess(decodedText);
+                    },
+                    (errorMessage) => {
+                        // Ignore continuous scan errors
+                    }
+                );
+                
+                setIsScanning(true);
+            } else {
+                setError('No cameras found on this device.');
+            }
+        } catch (err: any) {
             console.error('Error starting camera scanner:', err);
-            setError('Unable to access camera. Please check permissions or try uploading an image.');
+            setError(err.message || 'Unable to access camera. Please check permissions or try uploading an image.');
             setIsScanning(false);
         }
     };
 
     const stopScanner = async () => {
-        if (scannerRef.current && isScanning) {
+        if (scannerRef.current) {
             try {
-                await scannerRef.current.stop();
+                if (scannerRef.current.isScanning) {
+                    await scannerRef.current.stop();
+                }
                 scannerRef.current.clear();
+                scannerRef.current = null;
             } catch (err) {
                 console.error('Error stopping scanner:', err);
             }
@@ -91,12 +124,12 @@ const QRScanner: React.FC<QRScannerProps> = ({
             setError('');
             
             if (!scannerRef.current) {
-                scannerRef.current = new Html5Qrcode(qrRegionId);
+                scannerRef.current = new Html5Qrcode(qrRegionId, { verbose: false });
             }
 
             const result = await scannerRef.current.scanFile(file, true);
             handleScanSuccess(result);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error scanning file:', err);
             setError('Unable to read QR code from this image. Please try another image.');
         }
