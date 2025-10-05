@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
+import jsQR from 'jsqr';
 import CloseIcon from './icons/CloseIcon';
 
 interface QRScannerProps {
@@ -17,101 +17,88 @@ const QRScanner: React.FC<QRScannerProps> = ({
 }) => {
     const [isScanning, setIsScanning] = useState(false);
     const [error, setError] = useState('');
-    const scannerRef = useRef<Html5Qrcode | null>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const qrRegionId = 'qr-reader-region';
-    const isInitializedRef = useRef(false);
+    const streamRef = useRef<MediaStream | null>(null);
+    const animationRef = useRef<number | null>(null);
 
     useEffect(() => {
-        if (isOpen && !isInitializedRef.current) {
-            isInitializedRef.current = true;
-            // Small delay to ensure DOM is ready
-            setTimeout(() => {
-                startCameraScanner();
-            }, 100);
+        if (isOpen) {
+            startCamera();
         }
 
         return () => {
-            if (!isOpen) {
-                stopScanner();
-                isInitializedRef.current = false;
-            }
+            stopCamera();
         };
     }, [isOpen]);
 
-    const startCameraScanner = async () => {
+    const startCamera = async () => {
         try {
             setError('');
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' }
+            });
             
-            // Clear any existing instance
-            if (scannerRef.current) {
-                try {
-                    await scannerRef.current.stop();
-                    scannerRef.current.clear();
-                } catch (e) {
-                    console.log('Clearing previous scanner');
-                }
-            }
-
-            // Create new instance
-            scannerRef.current = new Html5Qrcode(qrRegionId, { verbose: false });
-
-            const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0
-            };
-
-            // Get available cameras
-            const devices = await Html5Qrcode.getCameras();
-            if (devices && devices.length > 0) {
-                // Use back camera if available, otherwise use first camera
-                const backCamera = devices.find(device => 
-                    device.label.toLowerCase().includes('back') || 
-                    device.label.toLowerCase().includes('rear') ||
-                    device.label.toLowerCase().includes('environment')
-                );
-                const cameraId = backCamera ? backCamera.id : devices[0].id;
-
-                await scannerRef.current.start(
-                    cameraId,
-                    config,
-                    (decodedText) => {
-                        handleScanSuccess(decodedText);
-                    },
-                    (errorMessage) => {
-                        // Ignore continuous scan errors
-                    }
-                );
-                
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                videoRef.current.play();
+                streamRef.current = stream;
                 setIsScanning(true);
-            } else {
-                setError('No cameras found on this device.');
+                scanQRCode();
             }
         } catch (err: any) {
-            console.error('Error starting camera scanner:', err);
-            setError(err.message || 'Unable to access camera. Please check permissions or try uploading an image.');
-            setIsScanning(false);
+            console.error('Error accessing camera:', err);
+            setError('Unable to access camera. Please check permissions or try uploading an image.');
         }
     };
 
-    const stopScanner = async () => {
-        if (scannerRef.current) {
-            try {
-                if (scannerRef.current.isScanning) {
-                    await scannerRef.current.stop();
-                }
-                scannerRef.current.clear();
-                scannerRef.current = null;
-            } catch (err) {
-                console.error('Error stopping scanner:', err);
+    const scanQRCode = () => {
+        if (!videoRef.current || !canvasRef.current || !isOpen) return;
+
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+
+        if (!context) return;
+
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (code) {
+                handleScanSuccess(code.data);
+                return;
             }
-            setIsScanning(false);
         }
+
+        animationRef.current = requestAnimationFrame(scanQRCode);
+    };
+
+    const stopCamera = () => {
+        if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current);
+            animationRef.current = null;
+        }
+
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+        }
+
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+
+        setIsScanning(false);
     };
 
     const handleScanSuccess = (decodedText: string) => {
-        stopScanner();
+        stopCamera();
         onScanSuccess(decodedText);
         onClose();
     };
@@ -123,12 +110,34 @@ const QRScanner: React.FC<QRScannerProps> = ({
         try {
             setError('');
             
-            if (!scannerRef.current) {
-                scannerRef.current = new Html5Qrcode(qrRegionId, { verbose: false });
-            }
+            const img = new Image();
+            const reader = new FileReader();
 
-            const result = await scannerRef.current.scanFile(file, true);
-            handleScanSuccess(result);
+            reader.onload = (e) => {
+                img.onload = () => {
+                    if (!canvasRef.current) return;
+                    
+                    const canvas = canvasRef.current;
+                    const context = canvas.getContext('2d');
+                    if (!context) return;
+
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.drawImage(img, 0, 0);
+
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                    if (code) {
+                        handleScanSuccess(code.data);
+                    } else {
+                        setError('Unable to read QR code from this image. Please try another image.');
+                    }
+                };
+                img.src = e.target?.result as string;
+            };
+
+            reader.readAsDataURL(file);
         } catch (err: any) {
             console.error('Error scanning file:', err);
             setError('Unable to read QR code from this image. Please try another image.');
@@ -140,7 +149,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
     };
 
     const handleClose = () => {
-        stopScanner();
+        stopCamera();
         onClose();
     };
 
@@ -168,54 +177,25 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
                 {/* Camera Scanner Area - Full Screen */}
                 <div className="flex-1 relative overflow-hidden bg-black">
-                    <style dangerouslySetInnerHTML={{__html: `
-                        #${qrRegionId} {
-                            width: 100% !important;
-                            height: 100% !important;
-                            border: none !important;
-                            position: relative !important;
-                        }
-                        #${qrRegionId} video {
-                            width: 100% !important;
-                            height: 100% !important;
-                            object-fit: cover !important;
-                            position: absolute !important;
-                            top: 0 !important;
-                            left: 0 !important;
-                            border: none !important;
-                        }
-                        #${qrRegionId} canvas {
-                            position: absolute !important;
-                            top: 50% !important;
-                            left: 50% !important;
-                            transform: translate(-50%, -50%) !important;
-                            display: none !important;
-                        }
-                        #${qrRegionId} > div {
-                            width: 100% !important;
-                            height: 100% !important;
-                            position: relative !important;
-                        }
-                        #${qrRegionId}__scan_region {
-                            width: 100% !important;
-                            height: 100% !important;
-                        }
-                        #${qrRegionId}__dashboard_section {
-                            display: none !important;
-                        }
-                        #${qrRegionId}__dashboard_section_csr {
-                            display: none !important;
-                        }
-                    `}} />
-                    <div id={qrRegionId} style={{ width: '100%', height: '100%', position: 'relative' }}>
-                        {!isScanning && !error && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
-                                <p className="text-white text-lg drop-shadow-lg">
-                                    Initializing camera...
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                    {/* Video element for camera feed */}
+                    <video
+                        ref={videoRef}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        autoPlay
+                        playsInline
+                        muted
+                    />
+                    
+                    {/* Hidden canvas for QR code processing */}
+                    <canvas ref={canvasRef} className="hidden" />
+                    
+                    {!isScanning && !error && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
+                            <p className="text-white text-lg drop-shadow-lg">
+                                Initializing camera...
+                            </p>
+                        </div>
+                    )}
                     
                     {/* Scanning Frame Overlay */}
                     {isScanning && (
