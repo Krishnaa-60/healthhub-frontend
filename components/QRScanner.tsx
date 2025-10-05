@@ -186,13 +186,13 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
                 {/* Error Message */}
                 {error && (
-                    <div className="absolute top-20 left-4 right-4 bg-red-500/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+                    <div className="absolute top-20 left-4 right-4 z-30 bg-red-500/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
                         <p className="text-sm text-white text-center">{error}</p>
                     </div>
                 )}
 
                 {/* Bottom Controls */}
-                <div className="absolute bottom-0 left-0 right-0 pb-8 pt-4 bg-gradient-to-t from-black/80 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 z-30 pb-8 pt-4 bg-gradient-to-t from-black/80 to-transparent">
                     <div className="flex items-center justify-center gap-8">
                         {/* Gallery Button */}
                         <input
