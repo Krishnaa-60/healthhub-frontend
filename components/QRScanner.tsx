@@ -42,17 +42,12 @@ const QRScanner: React.FC<QRScannerProps> = ({
             const config = {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.777778, // 16:9 aspect ratio
-                disableFlip: false,
-                videoConstraints: {
-                    facingMode: "environment",
-                    width: { ideal: 1920 },
-                    height: { ideal: 1080 }
-                }
+                aspectRatio: 1.777778,
+                disableFlip: false
             };
 
             await scannerRef.current.start(
-                { facingMode: "environment" },
+                { facingMode: { ideal: "environment" } },
                 config,
                 (decodedText) => {
                     handleScanSuccess(decodedText);
@@ -139,28 +134,47 @@ const QRScanner: React.FC<QRScannerProps> = ({
                 </div>
 
                 {/* Camera Scanner Area - Full Screen */}
-                <div className="flex-1 relative overflow-hidden">
-                    <style>{`
+                <div className="flex-1 relative overflow-hidden bg-black">
+                    <style dangerouslySetInnerHTML={{__html: `
                         #${qrRegionId} {
                             width: 100% !important;
                             height: 100% !important;
                             border: none !important;
+                            position: relative !important;
                         }
                         #${qrRegionId} video {
                             width: 100% !important;
                             height: 100% !important;
                             object-fit: cover !important;
+                            position: absolute !important;
+                            top: 0 !important;
+                            left: 0 !important;
                             border: none !important;
                         }
                         #${qrRegionId} canvas {
+                            position: absolute !important;
+                            top: 50% !important;
+                            left: 50% !important;
+                            transform: translate(-50%, -50%) !important;
                             display: none !important;
                         }
                         #${qrRegionId} > div {
                             width: 100% !important;
                             height: 100% !important;
+                            position: relative !important;
                         }
-                    `}</style>
-                    <div id={qrRegionId} className="w-full h-full">
+                        #${qrRegionId}__scan_region {
+                            width: 100% !important;
+                            height: 100% !important;
+                        }
+                        #${qrRegionId}__dashboard_section {
+                            display: none !important;
+                        }
+                        #${qrRegionId}__dashboard_section_csr {
+                            display: none !important;
+                        }
+                    `}} />
+                    <div id={qrRegionId} style={{ width: '100%', height: '100%', position: 'relative' }}>
                         {!isScanning && !error && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
                                 <p className="text-white text-lg drop-shadow-lg">
