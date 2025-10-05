@@ -58,9 +58,9 @@ const DoctorAppointmentCard: React.FC<DoctorAppointmentCardProps> = ({ appointme
             <DetailItem icon={<ClockIcon />}>{formattedTime}</DetailItem>
         </div>
       </div>
-      {!isPast && (
+      {(onEdit || onDelete) && (
           <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-dark-subtext/10">
-            {onEdit && (
+            {onEdit && !isPast && (
               <button
                 onClick={onEdit}
                 className="p-2 text-gray-500 dark:text-dark-subtext hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-dark-bg rounded-full transition-colors"
