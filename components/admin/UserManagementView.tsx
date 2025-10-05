@@ -5,6 +5,7 @@ import SearchIcon from '../icons/SearchIcon';
 import TrashIcon from '../icons/TrashIcon';
 import Toast from '../Toast';
 import SortIcon from '../icons/SortIcon';
+import QRScanner from '../QRScanner';
 
 type SortDirection = 'ascending' | 'descending';
 type SortKey = 'name' | 'healthId' | 'role' | 'mobileNo';
@@ -20,6 +21,7 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ onViewUser }) =
     const [searchQuery, setSearchQuery] = useState('');
     const [toastMessage, setToastMessage] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection } | null>(null);
+    const [showScanner, setShowScanner] = useState(false);
 
 
     const fetchUsers = async () => {
@@ -91,6 +93,16 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ onViewUser }) =
         </th>
     );
 
+    const handleQRScan = (scannedHealthId: string) => {
+        const user = users.find(u => u.healthId === scannedHealthId);
+        if (user) {
+            onViewUser(user);
+            setToastMessage(`User found: ${user.name}`);
+        } else {
+            setToastMessage(`No user found with Health ID: ${scannedHealthId}`);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div>
@@ -99,15 +111,27 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ onViewUser }) =
             </div>
             
             <div className="bg-white dark:bg-dark-card p-4 rounded-lg shadow-lg">
-                 <div className="relative mb-4">
-                    <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-dark-subtext pointer-events-none" />
-                    <input
-                        type="search"
-                        placeholder="Search by name, Health ID, or email..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-12 pr-4 py-2.5 bg-light-green dark:bg-dark-bg border border-gray-200 dark:border-dark-subtext/20 rounded-lg focus:ring-2 focus:ring-primary-green dark:focus:ring-dark-accent focus:outline-none transition-all"
-                    />
+                 <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                    <div className="relative flex-1">
+                        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-dark-subtext pointer-events-none" />
+                        <input
+                            type="search"
+                            placeholder="Search by name, Health ID, or email..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-12 pr-4 py-2.5 bg-light-green dark:bg-dark-bg border border-gray-200 dark:border-dark-subtext/20 rounded-lg focus:ring-2 focus:ring-primary-green dark:focus:ring-dark-accent focus:outline-none transition-all"
+                        />
+                    </div>
+                    <button
+                        onClick={() => setShowScanner(true)}
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 font-medium rounded-lg hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors border border-blue-200 dark:border-blue-500/30 whitespace-nowrap"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        <span className="hidden sm:inline">Scan QR</span>
+                        <span className="sm:hidden">Scan</span>
+                    </button>
                 </div>
                 {isLoading ? (
                     <div className="flex items-center justify-center h-64">
@@ -169,6 +193,14 @@ const UserManagementView: React.FC<UserManagementViewProps> = ({ onViewUser }) =
                 )}
             </div>
              <Toast message={toastMessage} onClose={() => setToastMessage('')} />
+             
+             {/* QR Scanner Modal */}
+            <QRScanner
+                isOpen={showScanner}
+                onClose={() => setShowScanner(false)}
+                onScanSuccess={handleQRScan}
+                title="Scan User QR Code"
+            />
         </div>
     );
 };

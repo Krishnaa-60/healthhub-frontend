@@ -10,6 +10,7 @@ import PersonIcon from './icons/PersonIcon';
 import EditIcon from './icons/EditIcon';
 import CalendarIcon from './icons/CalendarIcon';
 import EditProfileModal from './patient/EditProfileModal';
+import QRCodeDisplay from './QRCodeDisplay';
 
 interface ProfileViewProps {
   user: User;
@@ -44,6 +45,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUserUpdate, setToastM
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState('');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [showQRCode, setShowQRCode] = useState(false);
 
     const handleAvatarClick = () => {
         if (isUploading) return;
@@ -131,12 +133,23 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUserUpdate, setToastM
                         <DetailItem icon={<PersonIcon className="w-5 h-5" />} label="Emergency Contact" value={user.emergencyContact?.name} />
                         </div>
                         
-                        <button 
-                            onClick={() => setIsEditModalOpen(true)}
-                            className="mt-6 w-full py-2.5 px-4 bg-primary-green text-white font-bold rounded-lg shadow-md hover:bg-primary-green-dark transition-colors transform hover:scale-105"
-                        >
-                            Edit Profile
-                        </button>
+                        <div className="mt-6 space-y-3">
+                            <button 
+                                onClick={() => setIsEditModalOpen(true)}
+                                className="w-full py-2.5 px-4 bg-primary-green text-white font-bold rounded-lg shadow-md hover:bg-primary-green-dark transition-colors transform hover:scale-105"
+                            >
+                                Edit Profile
+                            </button>
+                            <button 
+                                onClick={() => setShowQRCode(true)}
+                                className="w-full py-2.5 px-4 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 font-bold rounded-lg shadow-md hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors border border-blue-200 dark:border-blue-500/30 flex items-center justify-center gap-2"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                </svg>
+                                Show My QR Code
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -188,6 +201,12 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUserUpdate, setToastM
                 onClose={() => setIsEditModalOpen(false)}
                 user={user}
                 onSave={handleSaveProfile}
+            />
+            <QRCodeDisplay
+                healthId={user.healthId}
+                userName={user.name}
+                isOpen={showQRCode}
+                onClose={() => setShowQRCode(false)}
             />
         </>
     );
