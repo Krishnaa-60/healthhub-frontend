@@ -91,7 +91,7 @@ const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ doctor,
       onUserUpdate(updatedUser);
       setIsModalOpen(false);
       setEditingAppointment(null);
-      setToastMessage(editingAppointment ? 'Appointment updated successfully.' : 'Appointment created and patient notified.');
+      setToastMessage(editingAppointment ? 'Appointment updated successfully. You\'ll be notified.' : 'Appointment created successfully. You\'ll be notified.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save appointment.');
     } finally {

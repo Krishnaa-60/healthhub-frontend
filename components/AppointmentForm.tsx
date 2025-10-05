@@ -70,8 +70,16 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ isOpen, onClose, onSa
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setTimeInput(value);
-        const time24 = convertTo24Hour(value, ampm);
-        setFormData({ ...formData, time: time24 });
+        
+        // Auto-detect AM/PM based on hour value
+        if (value) {
+            const [hours] = value.split(':');
+            const h = parseInt(hours, 10);
+            const newAmPm = h >= 12 ? 'PM' : 'AM';
+            setAmpm(newAmPm);
+            const time24 = convertTo24Hour(value, newAmPm);
+            setFormData({ ...formData, time: time24 });
+        }
     };
 
     const handleAmPmChange = (period: 'AM' | 'PM') => {
