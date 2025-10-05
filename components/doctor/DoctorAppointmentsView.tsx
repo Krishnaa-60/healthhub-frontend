@@ -152,6 +152,7 @@ const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ doctor,
                     key={appt.id}
                     appointment={appt}
                     isPast
+                    onDelete={() => handleDelete(appt.id)}
                 />
                 ))}
             </div>
