@@ -451,62 +451,85 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                     </main>
                 </div>
             ) : (
-                 <main className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 md:p-10 text-center relative overflow-hidden bg-gradient-to-br from-white via-green-50 to-blue-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
-                     {/* Subtle background accents */}
-                     <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 bg-primary-green/15 rounded-full blur-3xl"></div>
-                     <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-accent-blue/15 rounded-full blur-3xl"></div>
-
-                     <div className="z-10 relative w-full max-w-7xl">
-                        {/* Hero section */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-12">
-                          <div className="order-2 md:order-1">
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight">
-                              <span className="bg-gradient-to-r from-primary-green via-teal-500 to-accent-blue bg-clip-text text-transparent">Welcome, {user.name.split(' ')[0]}</span>
-                            </h1>
-                            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-dark-subtext mt-3 sm:mt-4 max-w-xl mx-auto md:mx-0">
-                              A clean, colourful snapshot of your health. Everything you need at a glance.
-                            </p>
-                            <div className="mt-5 flex flex-wrap items-center justify-center md:justify-start gap-2">
-                              <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700">Secure</span>
-                              <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-sky-100 text-sky-700">Fast</span>
-                              <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-fuchsia-100 text-fuchsia-700">Personal</span>
-                            </div>
-                          </div>
-                          <div className="order-1 md:order-2 flex items-center justify-center">
-                            <div className="w-full max-w-md md:max-w-lg">
-                              <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-white/40 dark:border-slate-700 rounded-3xl p-4 shadow-xl">
-                                <WelcomeIllustration className="w-full h-auto" />
-                              </div>
-                            </div>
-                          </div>
+                 <main className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 md:p-10 relative overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
+                    <div className="z-10 relative w-full max-w-7xl space-y-6 sm:space-y-8 md:space-y-10">
+                      {/* Welcome pill header */}
+                      <div className="mx-auto w-full rounded-2xl sm:rounded-3xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200/60 dark:border-slate-700 shadow-lg">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <LogoIcon className="w-7 h-7 sm:w-9 sm:h-9 text-primary-green" />
+                          <span className="text-lg sm:text-2xl font-extrabold tracking-wide bg-gradient-to-r from-primary-green via-teal-500 to-accent-blue bg-clip-text text-transparent">HealthHub</span>
                         </div>
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-primary-green text-white flex items-center justify-center">
+                            {user.avatar ? <img src={user.avatar} alt="User" className="w-full h-full object-cover"/> : <PatientIcon className="w-5 h-5" />}
+                          </div>
+                          <span className="text-sm sm:text-lg font-semibold text-gray-800 dark:text-white">Welcome, {user.name.split(' ')[0]}!</span>
+                        </div>
+                      </div>
 
-                        {/* Stats card */}
-                        <div className="mt-8 md:mt-12">
-                          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-white/50 dark:border-slate-700 rounded-3xl p-4 sm:p-6 shadow-xl">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 text-left">
-                              <StatCard icon={HeartbeatIcon} title="Upcoming Appointments" value={(() => {
-                                const now = new Date();
-                                return (user.appointments || []).filter(appt => {
-                                  const apptDateTime = new Date(`${appt.date}T${appt.time}`);
-                                  return apptDateTime >= now;
-                                }).length;
-                              })()} colorClass="bg-gradient-to-br from-brand-blue to-accent-blue" />
-                              <StatCard icon={TrophyIcon} title="Medical Records" value={user.medicalRecords?.length || 0} colorClass="bg-gradient-to-br from-brand-purple to-purple-400" />
-                              <StatCard icon={CheckCircleIcon} title="Active Prescriptions" value={user.prescriptions?.length || 0} colorClass="bg-gradient-to-br from-primary-green to-teal-400" />
-                            </div>
+                      {/* Three colorful cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                        {/* Card 1: Upcoming Appointments */}
+                        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-teal-100 via-cyan-100 to-blue-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 shadow-xl border border-white/60 dark:border-slate-700">
+                          <h3 className="text-left text-slate-800 dark:text-white font-bold text-base sm:text-lg">Upcoming Appointments</h3>
+                          <div className="mt-3 flex items-end gap-3">
+                            <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white">{(() => {
+                              const now = new Date();
+                              return (user.appointments || []).filter(appt => new Date(`${appt.date}T${appt.time}`) >= now).length;
+                            })()}</span>
+                            <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-2">Appointments</span>
+                          </div>
+                          <div className="mt-4 flex justify-start">
+                            <button onClick={() => setShowFullDashboard(true)} className="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-white text-teal-700 shadow hover:shadow-md dark:bg-slate-700 dark:text-teal-200">Reschedule</button>
                           </div>
                         </div>
 
-                        {/* CTA */}
-                        <div className="mt-8 md:mt-10">
-                          <button
-                            onClick={() => setShowFullDashboard(true)}
-                            className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-gradient-to-r from-primary-green via-teal-500 to-emerald-500 text-white text-sm sm:text-base font-extrabold rounded-xl shadow-2xl hover:shadow-[0_20px_50px_rgba(39,198,144,0.35)] transition-all duration-300 transform hover:scale-[1.02]"
-                          >
-                            Open Full Dashboard
-                          </button>
+                        {/* Card 2: Medical Records */}
+                        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-orange-100 via-rose-100 to-amber-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 shadow-xl border border-white/60 dark:border-slate-700">
+                          <h3 className="text-left text-slate-800 dark:text-white font-bold text-base sm:text-lg">Medical Records</h3>
+                          <div className="mt-2 text-left text-slate-700 dark:text-slate-300 text-xs sm:text-sm">Latest Visit Summary</div>
+                          <div className="mt-2 flex items-end gap-3">
+                            <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white">{user.medicalRecords?.length || 0}</span>
+                            <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-2">Records</span>
+                          </div>
+                          <div className="mt-4 flex justify-start">
+                            <button onClick={() => { setShowFullDashboard(true); setActiveView('records'); }} className="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-white text-rose-700 shadow hover:shadow-md dark:bg-slate-700 dark:text-rose-200">View All Records</button>
+                          </div>
                         </div>
+
+                        {/* Card 3: Active Prescriptions */}
+                        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-indigo-100 via-fuchsia-100 to-purple-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 shadow-xl border border-white/60 dark:border-slate-700">
+                          <h3 className="text-left text-slate-800 dark:text-white font-bold text-base sm:text-lg">Active Prescriptions</h3>
+                          <div className="mt-3 flex items-end gap-3">
+                            <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white">{user.prescriptions?.length || 0}</span>
+                            <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-2">Prescriptions</span>
+                          </div>
+                          <div className="mt-4 flex justify-start">
+                            <button onClick={() => { setShowFullDashboard(true); setActiveView('prescriptions'); }} className="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-white text-indigo-700 shadow hover:shadow-md dark:bg-slate-700 dark:text-indigo-200">Request a Refill</button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="rounded-2xl sm:rounded-3xl p-4 sm:p-5 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200/60 dark:border-slate-700 shadow-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">Building your wellness journey...</span>
+                          <span className="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400">Optimizing dashboard</span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-slate-200/70 dark:bg-slate-700 overflow-hidden">
+                          <div className="h-full w-2/3 bg-gradient-to-r from-primary-green via-teal-500 to-emerald-500 rounded-full"></div>
+                        </div>
+                      </div>
+
+                      {/* CTA to main dashboard */}
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() => setShowFullDashboard(true)}
+                          className="mt-2 sm:mt-3 inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-primary-green via-teal-500 to-emerald-500 shadow-2xl hover:shadow-[0_20px_50px_rgba(39,198,144,0.35)] transition-transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-300/50 dark:focus:ring-teal-700/50"
+                        >
+                          Go To Main Dashboard
+                        </button>
+                      </div>
                     </div>
                 </main>
             )}
