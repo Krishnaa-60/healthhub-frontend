@@ -451,54 +451,62 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                     </main>
                 </div>
             ) : (
-                 <main className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 text-center relative overflow-hidden bg-gradient-to-br from-light-green via-teal-50 to-blue-50 dark:bg-gradient-to-br dark:from-dark-bg dark:via-slate-900 dark:to-dark-card">
-                     {/* Soft decorative gradient blobs */}
-                     <div className="absolute -top-24 -left-24 w-72 h-72 bg-primary-green/20 rounded-full blur-3xl"></div>
-                     <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-accent-blue/20 rounded-full blur-3xl"></div>
-                     
-                     <div className="z-10 relative max-w-6xl mx-auto w-full px-2">
-                        {/* Hero */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-10">
-                          <div>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
-                              <span className="bg-gradient-to-r from-primary-green via-emerald-500 to-accent-blue bg-clip-text text-transparent">Welcome Back</span>
-                              <span className="text-gray-800 dark:text-dark-text">, {user.name.split(' ')[0]}!</span>
+                 <main className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 md:p-10 text-center relative overflow-hidden bg-gradient-to-br from-white via-green-50 to-blue-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+                     {/* Subtle background accents */}
+                     <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 bg-primary-green/15 rounded-full blur-3xl"></div>
+                     <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-accent-blue/15 rounded-full blur-3xl"></div>
+
+                     <div className="z-10 relative w-full max-w-7xl">
+                        {/* Hero section */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-12">
+                          <div className="order-2 md:order-1">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight">
+                              <span className="bg-gradient-to-r from-primary-green via-teal-500 to-accent-blue bg-clip-text text-transparent">Welcome, {user.name.split(' ')[0]}</span>
                             </h1>
-                            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-dark-subtext mt-3 sm:mt-4 max-w-xl mx-auto lg:mx-0">
-                              Here's a colourful snapshot of your health at a glance.
+                            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-dark-subtext mt-3 sm:mt-4 max-w-xl mx-auto md:mx-0">
+                              A clean, colourful snapshot of your health. Everything you need at a glance.
                             </p>
-                            {/* Quick chips */}
-                            <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-2">
-                              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">Secure</span>
-                              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-700">Smart</span>
-                              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-fuchsia-100 text-fuchsia-700">Personal</span>
+                            <div className="mt-5 flex flex-wrap items-center justify-center md:justify-start gap-2">
+                              <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700">Secure</span>
+                              <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-sky-100 text-sky-700">Fast</span>
+                              <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-fuchsia-100 text-fuchsia-700">Personal</span>
                             </div>
                           </div>
-                          <div className="hidden lg:block">
-                            <WelcomeIllustration className="w-full h-auto" />
+                          <div className="order-1 md:order-2 flex items-center justify-center">
+                            <div className="w-full max-w-md md:max-w-lg">
+                              <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-white/40 dark:border-slate-700 rounded-3xl p-4 shadow-xl">
+                                <WelcomeIllustration className="w-full h-auto" />
+                              </div>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Stats */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8 md:mt-10 text-left">
-                           <StatCard icon={HeartbeatIcon} title="Upcoming Appointments" value={(() => {
-                               const now = new Date();
-                               return (user.appointments || []).filter(appt => {
-                                   const apptDateTime = new Date(`${appt.date}T${appt.time}`);
-                                   return apptDateTime >= now;
-                               }).length;
-                           })()} colorClass="bg-gradient-to-br from-brand-blue to-accent-blue" />
-                           <StatCard icon={TrophyIcon} title="Medical Records" value={user.medicalRecords?.length || 0} colorClass="bg-gradient-to-br from-brand-purple to-purple-400" />
-                           <StatCard icon={CheckCircleIcon} title="Active Prescriptions" value={user.prescriptions?.length || 0} colorClass="bg-gradient-to-br from-primary-green to-teal-400" />
+                        {/* Stats card */}
+                        <div className="mt-8 md:mt-12">
+                          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-white/50 dark:border-slate-700 rounded-3xl p-4 sm:p-6 shadow-xl">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 text-left">
+                              <StatCard icon={HeartbeatIcon} title="Upcoming Appointments" value={(() => {
+                                const now = new Date();
+                                return (user.appointments || []).filter(appt => {
+                                  const apptDateTime = new Date(`${appt.date}T${appt.time}`);
+                                  return apptDateTime >= now;
+                                }).length;
+                              })()} colorClass="bg-gradient-to-br from-brand-blue to-accent-blue" />
+                              <StatCard icon={TrophyIcon} title="Medical Records" value={user.medicalRecords?.length || 0} colorClass="bg-gradient-to-br from-brand-purple to-purple-400" />
+                              <StatCard icon={CheckCircleIcon} title="Active Prescriptions" value={user.prescriptions?.length || 0} colorClass="bg-gradient-to-br from-primary-green to-teal-400" />
+                            </div>
+                          </div>
                         </div>
 
                         {/* CTA */}
-                        <button 
+                        <div className="mt-8 md:mt-10">
+                          <button
                             onClick={() => setShowFullDashboard(true)}
-                            className="mt-8 sm:mt-10 md:mt-12 px-6 sm:px-8 py-3 bg-gradient-to-r from-primary-green via-teal-500 to-emerald-500 text-white text-sm sm:text-base font-extrabold rounded-xl shadow-2xl hover:shadow-[0_20px_50px_rgba(39,198,144,0.35)] transition-all duration-300 transform hover:scale-105"
-                        >
-                            Explore Full Dashboard
-                        </button>
+                            className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-gradient-to-r from-primary-green via-teal-500 to-emerald-500 text-white text-sm sm:text-base font-extrabold rounded-xl shadow-2xl hover:shadow-[0_20px_50px_rgba(39,198,144,0.35)] transition-all duration-300 transform hover:scale-[1.02]"
+                          >
+                            Open Full Dashboard
+                          </button>
+                        </div>
                     </div>
                 </main>
             )}
