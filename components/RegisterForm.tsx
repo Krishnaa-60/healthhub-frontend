@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { AuthMode, User } from '../types';
 import { ADMIN_EMAIL, SECURITY_QUESTIONS } from '../constants';
 import EyeIcon from './icons/EyeIcon';
@@ -18,6 +18,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onLoginSuccess
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [diseases, setDiseases] = useState([{ name: '', years: '' }]);
   const [birthdate, setBirthdate] = useState('');
+  const birthdateRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,17 +32,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onLoginSuccess
   const removeDisease = (index: number) => setDiseases(diseases.filter((_, i) => i !== index));
 
   const handleBirthdateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
-    const truncatedValue = rawValue.substring(0, 8); // Limit to 8 digits (ddmmyyyy)
-    let formattedValue = truncatedValue;
-
-    if (truncatedValue.length > 2) {
-      formattedValue = `${truncatedValue.substring(0, 2)}-${truncatedValue.substring(2)}`;
-    }
-    if (truncatedValue.length > 4) {
-      formattedValue = `${formattedValue.substring(0, 5)}-${formattedValue.substring(5)}`;
-    }
-    setBirthdate(formattedValue);
+    // Native date input returns value in YYYY-MM-DD
+    setBirthdate(e.target.value);
   };
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -165,15 +157,36 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onLoginSuccess
             <label className={labelStyle}>Birthdate</label>
             <div className="relative">
                 <input 
-                    type="text" 
-                    placeholder="dd-mm-yyyy" 
+                    ref={birthdateRef}
+                    type="date" 
+                    placeholder="yyyy-mm-dd" 
                     className={`${inputStyle} pr-10`} 
                     required
                     value={birthdate}
                     onChange={handleBirthdateChange}
                     name="birthdate"
+                    max={new Date().toISOString().slice(0,10)}
                 />
-                <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = birthdateRef.current;
+                    if (!el) return;
+                    // Prefer native showPicker when available (Chromium)
+                    // @ts-ignore - showPicker is not yet in TS lib DOM
+                    if (el.showPicker) {
+                      // @ts-ignore
+                      el.showPicker();
+                    } else {
+                      el.focus();
+                      el.click();
+                    }
+                  }}
+                  aria-label="Open date picker"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-dark-bg"
+                >
+                  <CalendarIcon className="h-5 w-5 text-gray-500" />
+                </button>
             </div>
         </div>
         <div>
