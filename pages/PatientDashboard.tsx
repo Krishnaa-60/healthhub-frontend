@@ -31,6 +31,7 @@ import SearchResultsView from '../components/patient/SearchResultsView';
 import SearchIcon from '../components/icons/SearchIcon';
 import Toast from '../components/Toast';
 import TrashIcon from '../components/icons/TrashIcon';
+import WelcomeIllustration from '../components/icons/WelcomeIllustration';
 
 // --- Animated Counter Hook ---
 const useAnimatedCounter = (endValue: number, duration = 1500) => {
@@ -451,12 +452,35 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                 </div>
             ) : (
                  <main className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 text-center relative overflow-hidden bg-gradient-to-br from-light-green via-teal-50 to-blue-50 dark:bg-gradient-to-br dark:from-dark-bg dark:via-slate-900 dark:to-dark-card">
-                     <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%2327C690\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
-                    <div className="z-10 relative max-w-4xl mx-auto w-full px-2">
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-800 dark:text-dark-text">Welcome Back, {user.name.split(' ')[0]}!</h1>
-                        <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-dark-subtext mt-3 sm:mt-4 max-w-xl mx-auto px-4">Here's a quick summary of your health dashboard.</p>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8 md:mt-10 text-left">
+                     {/* Soft decorative gradient blobs */}
+                     <div className="absolute -top-24 -left-24 w-72 h-72 bg-primary-green/20 rounded-full blur-3xl"></div>
+                     <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-accent-blue/20 rounded-full blur-3xl"></div>
+                     
+                     <div className="z-10 relative max-w-6xl mx-auto w-full px-2">
+                        {/* Hero */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-10">
+                          <div>
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+                              <span className="bg-gradient-to-r from-primary-green via-emerald-500 to-accent-blue bg-clip-text text-transparent">Welcome Back</span>
+                              <span className="text-gray-800 dark:text-dark-text">, {user.name.split(' ')[0]}!</span>
+                            </h1>
+                            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-dark-subtext mt-3 sm:mt-4 max-w-xl mx-auto lg:mx-0">
+                              Here's a colourful snapshot of your health at a glance.
+                            </p>
+                            {/* Quick chips */}
+                            <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-2">
+                              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">Secure</span>
+                              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-700">Smart</span>
+                              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-fuchsia-100 text-fuchsia-700">Personal</span>
+                            </div>
+                          </div>
+                          <div className="hidden lg:block">
+                            <WelcomeIllustration className="w-full h-auto" />
+                          </div>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8 md:mt-10 text-left">
                            <StatCard icon={HeartbeatIcon} title="Upcoming Appointments" value={(() => {
                                const now = new Date();
                                return (user.appointments || []).filter(appt => {
@@ -468,11 +492,12 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                            <StatCard icon={CheckCircleIcon} title="Active Prescriptions" value={user.prescriptions?.length || 0} colorClass="bg-gradient-to-br from-primary-green to-teal-400" />
                         </div>
 
+                        {/* CTA */}
                         <button 
                             onClick={() => setShowFullDashboard(true)}
-                            className="mt-8 sm:mt-10 md:mt-12 px-6 sm:px-8 py-2.5 sm:py-3 bg-primary-green text-white text-sm sm:text-base font-bold rounded-lg shadow-xl hover:bg-primary-green-dark transition-all duration-300 transform hover:scale-105"
+                            className="mt-8 sm:mt-10 md:mt-12 px-6 sm:px-8 py-3 bg-gradient-to-r from-primary-green via-teal-500 to-emerald-500 text-white text-sm sm:text-base font-extrabold rounded-xl shadow-2xl hover:shadow-[0_20px_50px_rgba(39,198,144,0.35)] transition-all duration-300 transform hover:scale-105"
                         >
-                            Go To Full Dashboard
+                            Explore Full Dashboard
                         </button>
                     </div>
                 </main>
