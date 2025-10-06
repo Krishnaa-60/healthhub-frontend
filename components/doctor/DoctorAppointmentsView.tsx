@@ -24,20 +24,39 @@ const DoctorAppointmentsView: React.FC<DoctorAppointmentsViewProps> = ({ doctor,
   const { upcomingAppointments, pastAppointments } = useMemo(() => {
     const now = new Date();
 
+    const parseLocalDateTime = (date: string, time: string): Date | null => {
+      if (!date || !time) return null;
+      const [y, m, d] = date.split('-').map(n => parseInt(n, 10));
+      const [hh, mm] = time.split(':').map(n => parseInt(n, 10));
+      if ([y, m, d, hh, mm].some(v => Number.isNaN(v))) return null;
+      // JS Date months are 0-based
+      return new Date(y, m - 1, d, hh, mm, 0, 0);
+    };
+
     const upcoming: Appointment[] = [];
     const past: Appointment[] = [];
 
     appointments.forEach(appt => {
-      const apptDateTime = new Date(`${appt.date}T${appt.time}`);
-      if (apptDateTime >= now) {
+      const apptDateTime = parseLocalDateTime(appt.date, appt.time);
+      if (!apptDateTime) {
+        // If invalid, treat as upcoming so it doesn't disappear incorrectly
+        upcoming.push(appt);
+        return;
+      }
+      if (apptDateTime.getTime() >= now.getTime()) {
         upcoming.push(appt);
       } else {
         past.push(appt);
       }
     });
-    
-    upcoming.sort((a, b) => new Date(`${a.date}T${a.time}`).getTime() - new Date(`${b.date}T${b.time}`).getTime());
-    past.sort((a, b) => new Date(`${b.date}T${b.time}`).getTime() - new Date(`${a.date}T${a.time}`).getTime());
+
+    const getTimeValue = (a: Appointment) => {
+      const dt = parseLocalDateTime(a.date, a.time);
+      return dt ? dt.getTime() : Number.POSITIVE_INFINITY;
+    };
+
+    upcoming.sort((a, b) => getTimeValue(a) - getTimeValue(b));
+    past.sort((a, b) => getTimeValue(b) - getTimeValue(a));
 
     return { upcomingAppointments: upcoming, pastAppointments: past };
   }, [appointments]);
