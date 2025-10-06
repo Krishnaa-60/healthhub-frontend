@@ -161,6 +161,28 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
     const [showFullDashboard, setShowFullDashboard] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [toastMessage, setToastMessage] = useState('');
+    // --- Helpers for accurate counts (timezone-safe)
+    const parseLocalDateTime = (date: string, time: string): Date | null => {
+        if (!date || !time) return null;
+        const [y, m, d] = date.split('-').map(n => parseInt(n, 10));
+        const [hh, mm] = time.split(':').map(n => parseInt(n, 10));
+        if ([y, m, d, hh, mm].some(v => Number.isNaN(v))) return null;
+        return new Date(y, m - 1, d, hh, mm, 0, 0);
+    };
+
+    const upcomingAppointmentsCount = useMemo(() => {
+        const now = new Date();
+        let count = 0;
+        for (const appt of (user.appointments || [])) {
+            const dt = parseLocalDateTime(appt.date, appt.time);
+            if (dt && dt.getTime() >= now.getTime()) count++;
+        }
+        return count;
+    }, [user.appointments]);
+
+    const activePrescriptionsCount = useMemo(() => {
+        return user.prescriptions?.length || 0;
+    }, [user.prescriptions]);
 
 
     const fetchMedicalRecords = async () => {
@@ -457,15 +479,9 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                         <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-dark-subtext mt-3 sm:mt-4 max-w-xl mx-auto px-4">Here's a quick summary of your health dashboard.</p>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8 md:mt-10 text-left">
-                           <StatCard icon={HeartbeatIcon} title="Upcoming Appointments" value={(() => {
-                               const now = new Date();
-                               return (user.appointments || []).filter(appt => {
-                                   const apptDateTime = new Date(`${appt.date}T${appt.time}`);
-                                   return apptDateTime >= now;
-                               }).length;
-                           })()} colorClass="bg-gradient-to-br from-brand-blue to-accent-blue" />
+                           <StatCard icon={HeartbeatIcon} title="Upcoming Appointments" value={upcomingAppointmentsCount} colorClass="bg-gradient-to-br from-brand-blue to-accent-blue" />
                            <StatCard icon={TrophyIcon} title="Medical Records" value={user.medicalRecords?.length || 0} colorClass="bg-gradient-to-br from-brand-purple to-purple-400" />
-                           <StatCard icon={CheckCircleIcon} title="Active Prescriptions" value={user.prescriptions?.length || 0} colorClass="bg-gradient-to-br from-primary-green to-teal-400" />
+                           <StatCard icon={CheckCircleIcon} title="Active Prescriptions" value={activePrescriptionsCount} colorClass="bg-gradient-to-br from-primary-green to-teal-400" />
                         </div>
 
                         <button 
