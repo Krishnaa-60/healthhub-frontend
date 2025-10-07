@@ -6,7 +6,7 @@ import PlusIcon from './icons/PlusIcon';
 import TrashIcon from './icons/TrashIcon';
 import Toast from './Toast';
 import UserPlaceholderIcon from './icons/UserPlaceholderIcon';
-import SendMessageToDoctorModal from './patient/SendMessageToDoctorModal';
+import ChatModal from './chat/ChatModal';
 import DownloadIcon from './icons/DownloadIcon';
 import CloseIcon from './icons/CloseIcon';
 import QRScanner from './QRScanner';
@@ -342,12 +342,11 @@ const DoctorsView: React.FC<DoctorsViewProps> = ({ user, onUserUpdate }) => {
             <Toast message={toastMessage} onClose={() => setToastMessage('')} />
             
             {messagingDoctor && (
-                <SendMessageToDoctorModal
+                <ChatModal
                     isOpen={!!messagingDoctor}
                     onClose={() => setMessagingDoctor(null)}
-                    patient={user}
-                    doctor={messagingDoctor}
-                    onSuccess={() => setToastMessage(`Message sent to ${messagingDoctor.name}`)}
+                    currentUser={user}
+                    peerUser={messagingDoctor}
                 />
             )}
             

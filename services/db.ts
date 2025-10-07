@@ -190,6 +190,18 @@ export const sendCommunicationFromPatient = async (doctorId: string, fromPatient
     });
 };
 
+// Chat APIs
+export const getConversation = async (userA: string, userB: string): Promise<{ participants: Array<{ id: string; name: string; role?: any }>; messages: Communication[] }> => {
+    return apiRequest(`/chat/${userA}/${userB}`);
+};
+
+export const sendChatMessage = async (fromId: string, toId: string, payload: { message?: string; imageUrl?: string }): Promise<Communication> => {
+    return apiRequest<Communication>('/chat/send', {
+        method: 'POST',
+        body: JSON.stringify({ fromId, toId, ...payload })
+    });
+};
+
 
 export const generateDietPlan = (healthCondition: string): Promise<any> => {
   return apiRequest('/ai/generate-diet-plan', {

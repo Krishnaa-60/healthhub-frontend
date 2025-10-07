@@ -6,7 +6,7 @@ import DoctorDashboardHome from '../components/doctor/DoctorDashboardHome';
 import PatientManagementView from '../components/doctor/PatientManagementView';
 import CommunicationsView from '../components/doctor/CommunicationsView';
 import UserDetailView from '../components/admin/UserDetailView'; // Reusing admin's detail view
-import SendMessageModal from '../components/doctor/SendMessageModal';
+import ChatModal from '../components/chat/ChatModal';
 import { getUserById, updateUser } from '../services/db';
 import DoctorAppointmentsView from '../components/doctor/DoctorAppointmentsView';
 import DoctorProfileView from '../components/doctor/DoctorProfileView';
@@ -258,11 +258,11 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ doctor: initialDoctor
       )}
 
       {messagingPatient && (
-        <SendMessageModal
-            doctor={doctor}
-            patient={messagingPatient}
-            onClose={() => setMessagingPatient(null)}
-            onSendSuccess={handleSendSuccess}
+        <ChatModal
+          isOpen={!!messagingPatient}
+          onClose={() => setMessagingPatient(null)}
+          currentUser={doctor}
+          peerUser={messagingPatient}
         />
       )}
        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
