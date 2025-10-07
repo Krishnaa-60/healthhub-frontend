@@ -236,12 +236,30 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
                     </div>
                   )}
                   {m.recordShare && (
-                    <div className={`mb-2 rounded border ${mine ? 'border-white/30' : 'border-gray-300 dark:border-[#2a323c]'} p-2 bg-white/40 dark:bg-white/5 text-gray-800 dark:text-gray-200`}>
-                      <div className="font-semibold text-sm">Shared Record: {m.recordShare.name}</div>
-                      <div className="text-[12px] opacity-80">{[m.recordShare.category, m.recordShare.disease].filter(Boolean).join(' • ')}</div>
+                    <div className={`mb-2 rounded border ${mine ? 'border-white/30' : 'border-gray-300 dark:border-[#2a323c]'} p-3 bg-white/40 dark:bg-white/5 text-gray-800 dark:text-gray-200`}>
+                      <div className="font-semibold text-sm mb-1">📋 Shared Record: {m.recordShare.name}</div>
+                      <div className="text-[12px] opacity-80 mb-2">{[m.recordShare.category, m.recordShare.disease].filter(Boolean).join(' • ')}</div>
                       {m.recordShare.files && m.recordShare.files.length > 0 && (
-                        <div className="mt-1">
-                          <button type="button" className={`text-[12px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => window.open(m.recordShare!.files![0].content, '_blank')}>Open first file</button>
+                        <div className="space-y-2">
+                          {m.recordShare.files.map((file, idx) => {
+                            const isImage = /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(file.name);
+                            return (
+                              <div key={idx} className="bg-white/60 dark:bg-black/20 rounded p-2">
+                                <div className="text-[11px] font-medium mb-1">{file.name}</div>
+                                {isImage ? (
+                                  <>
+                                    <img src={file.content} alt={file.name} className="max-h-40 rounded object-contain cursor-pointer" onClick={() => setPreviewImage(file.content)} />
+                                    <div className="flex gap-2 mt-1">
+                                      <button type="button" className={`text-[10px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => setPreviewImage(file.content)}>View</button>
+                                      <button type="button" className={`text-[10px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => handleDownloadImage(file.content, file.name)}>Download</button>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <button type="button" className={`text-[11px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => handleDownloadImage(file.content, file.name)}>Download {file.name}</button>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
