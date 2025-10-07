@@ -299,32 +299,74 @@ const DoctorsView: React.FC<DoctorsViewProps> = ({ user, onUserUpdate }) => {
                 </div>
             </div>
 
-            {/* Right Column: Communications */}
+            {/* Right Column: Communications Summary */}
             <div className="lg:col-span-2 bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-xl shadow-md">
                 <div className="p-4 bg-gradient-to-r from-grad-red-from to-grad-red-to rounded-t-xl">
                     <h1 className="text-xl font-bold text-white">Doctor Communications</h1>
+                    <p className="text-xs text-white/80 mt-1">Tap a doctor to open the chat</p>
                 </div>
-                <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-                     {communications.length > 0 ? (
-                        [...communications].sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).map(comm => {
-                            const isDoctorAdded = doctors.some(d => d.healthId === comm.from.id);
-                            return <CommunicationCard 
-                                key={comm.id} 
-                                comm={comm} 
-                                isDoctorAdded={isDoctorAdded} 
-                                onAddDoctor={handleAddDoctorFromComm} 
-                                onDelete={handleDeleteCommunication}
-                                onPreview={setPreviewingImage}
-                                isLoading={isSubmitting} 
-                            />
-                        })
-                    ) : (
-                        <div className="text-center text-gray-500 dark:text-dark-subtext py-16">
-                            <DoctorIcon className="w-20 h-20 mx-auto mb-4 text-gray-300 dark:text-dark-subtext/30" />
-                            <h3 className="text-lg font-semibold">No Communications Yet</h3>
-                            <p className="text-sm">Messages and prescriptions from your doctors will appear here.</p>
-                        </div>
-                    )}
+                <div className="p-6 space-y-3 max-h-[70vh] overflow-y-auto">
+                    {(() => {
+                        if (!communications || communications.length === 0) {
+                            return (
+                                <div className="text-center text-gray-500 dark:text-dark-subtext py-16">
+                                    <DoctorIcon className="w-20 h-20 mx-auto mb-4 text-gray-300 dark:text-dark-subtext/30" />
+                                    <h3 className="text-lg font-semibold">No Communications Yet</h3>
+                                    <p className="text-sm">Messages and prescriptions from your doctors will appear here.</p>
+                                </div>
+                            );
+                        }
+
+                        // Group by doctor id
+                        const group = new Map<string, { doctor: User | null; count: number }>();
+                        communications.forEach(c => {
+                            const docId = c.from.id; // from doctor -> patient in patient inbox
+                            const prev = group.get(docId);
+                            group.set(docId, { doctor: prev?.doctor ?? doctors.find(d => d.healthId === docId) ?? null, count: (prev?.count ?? 0) + 1 });
+                        });
+
+                        const items = Array.from(group.entries()).map(([docId, info]) => ({
+                            docId,
+                            doctor: info.doctor,
+                            count: info.count,
+                        }));
+
+                        return items.map(({ docId, doctor: doc, count }) => (
+                            <div
+                                key={docId}
+                                className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-dark-subtext/20 bg-white dark:bg-dark-card hover:bg-light-green dark:hover:bg-dark-bg cursor-pointer"
+                                onClick={() => {
+                                    const found = doctors.find(d => d.healthId === docId);
+                                    if (found) setMessagingDoctor(found);
+                                    else {
+                                        // If doctor not in list, fetch by id fallback
+                                        getUserById(docId).then(u => u && setMessagingDoctor(u));
+                                    }
+                                }}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="relative">
+                                        <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-dark-bg flex items-center justify-center">
+                                            {doc?.avatar ? (
+                                                <img src={doc.avatar} alt={doc.name} className="w-full h-full object-cover rounded-full" />
+                                            ) : (
+                                                <UserPlaceholderIcon className="w-5 h-5 text-gray-500 dark:text-dark-subtext" />
+                                            )}
+                                        </div>
+                                        <span className="absolute -top-1 -right-1 inline-flex h-3 w-3 rounded-full bg-red-500 animate-ping"></span>
+                                        <span className="absolute -top-1 -right-1 inline-flex h-3 w-3 rounded-full bg-red-500"></span>
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-gray-800 dark:text-dark-text">{doc?.name || docId}</p>
+                                        <p className="text-xs text-gray-500 dark:text-dark-subtext">{doc?.specialization || 'Doctor'}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span className="text-xs font-bold px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">{count}</span>
+                                </div>
+                            </div>
+                        ));
+                    })()}
                 </div>
             </div>
 

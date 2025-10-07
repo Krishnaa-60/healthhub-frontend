@@ -202,6 +202,12 @@ export const sendChatMessage = async (fromId: string, toId: string, payload: { m
     });
 };
 
+export const deleteChatMessage = async (userA: string, userB: string, messageId: string): Promise<void> => {
+    return apiRequest<void>(`/chat/${userA}/${userB}/${messageId}`, {
+        method: 'DELETE',
+    });
+};
+
 
 export const generateDietPlan = (healthCondition: string): Promise<any> => {
   return apiRequest('/ai/generate-diet-plan', {
