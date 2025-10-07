@@ -42,6 +42,7 @@ const UploadRecordForm: React.FC<UploadRecordFormProps> = ({ user, onUploadSucce
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Effect to handle camera stream activation
     useEffect(() => {
@@ -105,7 +106,7 @@ const UploadRecordForm: React.FC<UploadRecordFormProps> = ({ user, onUploadSucce
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            const newFiles = Array.from(e.target.files);
+            const newFiles: File[] = Array.from(e.target.files as FileList);
             setSelectedFiles(prevFiles => {
                 const existingFileNames = new Set(prevFiles.map(f => f.name));
                 const uniqueNewFiles = newFiles.filter(f => !existingFileNames.has(f.name));
