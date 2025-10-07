@@ -100,6 +100,13 @@ export interface Communication {
   message?: string;
   imageUrl?: string; // base64 on send, URL when fetched
   read?: boolean; // whether the recipient has read the message
+  replyTo?: {
+    id: string;
+    message?: string;
+    imageUrl?: string;
+    from?: { id: string; name: string };
+    timestamp?: string;
+  };
 }
 
 export interface ContactMessage {

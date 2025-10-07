@@ -195,7 +195,11 @@ export const getConversation = async (userA: string, userB: string): Promise<{ p
     return apiRequest(`/chat/${userA}/${userB}`);
 };
 
-export const sendChatMessage = async (fromId: string, toId: string, payload: { message?: string; imageUrl?: string }): Promise<Communication> => {
+export const sendChatMessage = async (
+    fromId: string,
+    toId: string,
+    payload: { message?: string; imageUrl?: string; replyTo?: { id: string; message?: string; imageUrl?: string; from?: { id: string; name: string }; timestamp?: string } }
+): Promise<Communication> => {
     return apiRequest<Communication>('/chat/send', {
         method: 'POST',
         body: JSON.stringify({ fromId, toId, ...payload })

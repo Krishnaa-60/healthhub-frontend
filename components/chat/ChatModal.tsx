@@ -27,6 +27,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState('');
   const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [replyTarget, setReplyTarget] = useState<Communication | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -135,10 +136,20 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
       const newMsg = await sendChatMessage(currentUser.healthId, peerUser.healthId, {
         message: input.trim() || undefined,
         imageUrl: imageBase64 || undefined,
+        replyTo: replyTarget
+          ? {
+              id: replyTarget.id,
+              message: replyTarget.message,
+              imageUrl: replyTarget.imageUrl,
+              from: replyTarget.from,
+              timestamp: replyTarget.timestamp,
+            }
+          : undefined,
       });
       setMessages(prev => [...prev, newMsg]);
       setInput('');
       setImageBase64(null);
+      setReplyTarget(null);
       setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 10);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to send message');
@@ -189,6 +200,16 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
                       <TrashIcon className="w-4 h-4" />
                     </button>
                   </div>
+                  {m.replyTo && (
+                    <div className={`mb-2 text-[12px] rounded border ${mine ? 'border-white/30' : 'border-gray-300 dark:border-[#2a323c]'} p-2 bg-white/40 dark:bg-white/5 text-gray-800 dark:text-gray-200`}>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold truncate max-w-[12rem]">{m.replyTo.from?.name || 'Quoted'}</span>
+                        <span className="text-[10px] opacity-70">{m.replyTo.timestamp ? new Date(m.replyTo.timestamp).toLocaleString() : ''}</span>
+                      </div>
+                      {m.replyTo.message && <div className="truncate">{m.replyTo.message}</div>}
+                      {m.replyTo.imageUrl && <img src={m.replyTo.imageUrl} alt="quoted" className="mt-1 max-h-24 rounded object-contain" />}
+                    </div>
+                  )}
                   {m.message && <div className="whitespace-pre-wrap text-sm leading-relaxed">{m.message}</div>}
                   {m.imageUrl && (
                     <div className="mt-2">
@@ -202,6 +223,9 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
                   <div className={`text-[10px] mt-1 ${mine ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
                     {new Date(m.timestamp).toLocaleString()}
                   </div>
+                  <div className="mt-1 flex justify-end">
+                    <button type="button" className={`text-[11px] underline ${mine ? 'text-white/90' : 'text-gray-600 dark:text-gray-300'}`} onClick={() => setReplyTarget(m)}>Reply</button>
+                  </div>
                 </div>
               </div>
             );
@@ -210,6 +234,16 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
         </div>
 
         <form onSubmit={handleSend} className="p-3 sm:p-4 border-t border-gray-200 dark:border-[#232a33] space-y-2">
+          {replyTarget && (
+            <div className="flex items-start justify-between gap-3 rounded-lg border border-gray-200 dark:border-[#2a323c] p-2 bg-gray-50 dark:bg-[#151a1f]">
+              <div className="text-[12px] text-gray-700 dark:text-gray-200">
+                <div className="font-semibold">Replying to {replyTarget.from.name}</div>
+                {replyTarget.message && <div className="truncate max-w-[28rem]">{replyTarget.message}</div>}
+                {replyTarget.imageUrl && <img src={replyTarget.imageUrl} alt="quoted" className="mt-1 max-h-20 rounded object-contain" />}
+              </div>
+              <button type="button" onClick={() => setReplyTarget(null)} className="text-xs text-red-500">Clear</button>
+            </div>
+          )}
           {imageBase64 && (
             <div className="flex items-center gap-2">
               <img src={imageBase64} alt="preview" className="h-16 w-auto rounded border border-gray-200 dark:border-[#232a33]" />
