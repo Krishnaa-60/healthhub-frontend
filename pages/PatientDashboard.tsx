@@ -512,8 +512,10 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
             )}
             {previewingRecord && (
                 <FilePreviewModal 
+                    user={user}
                     record={previewingRecord} 
                     onClose={() => window.history.back()}
+                    onShareSuccess={() => setToastMessage('Record shared successfully via chat.')}
                 />
             )}
             <Toast message={toastMessage} onClose={() => setToastMessage('')} />

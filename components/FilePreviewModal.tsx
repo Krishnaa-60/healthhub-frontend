@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { MedicalRecord, MedicalRecordFile } from '../types';
+import { MedicalRecord, MedicalRecordFile, User } from '../types';
 import CloseIcon from './icons/CloseIcon';
 import DocumentIcon from './icons/DocumentIcon';
 import DownloadIcon from './icons/DownloadIcon';
 import SpinnerIcon from './icons/SpinnerIcon';
+import ShareRecordModal from './ShareRecordModal';
 
 interface FilePreviewModalProps {
+    user: User;
     record: MedicalRecord;
     onClose: () => void;
+    onShareSuccess?: () => void;
 }
 
 const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
@@ -65,9 +68,10 @@ const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
 };
 
 
-const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ record, onClose }) => {
+const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ user, record, onClose, onShareSuccess }) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [isSharing, setIsSharing] = useState(false);
     const activeFile = record.files[activeIndex];
     
     const handleDownload = async () => {
@@ -110,6 +114,13 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ record, onClose }) 
                         <p className="text-sm text-gray-500 dark:text-dark-subtext">{activeFile.name} ({activeIndex + 1} of {record.files.length})</p>
                     </div>
                     <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsSharing(true)}
+                            className="min-w-[100px] px-4 py-2 bg-white text-primary-green font-semibold rounded-lg shadow-sm hover:bg-gray-100 transition-colors"
+                            aria-label="Share record"
+                        >
+                            Share
+                        </button>
                         <button
                             onClick={handleDownload}
                             disabled={isDownloading}
@@ -167,6 +178,17 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ record, onClose }) 
                     </main>
                 </div>
             </div>
+            {isSharing && (
+                <ShareRecordModal
+                    user={user}
+                    record={record}
+                    onClose={() => setIsSharing(false)}
+                    onShared={() => {
+                        setIsSharing(false);
+                        onShareSuccess?.();
+                    }}
+                />
+            )}
         </div>
     );
 };

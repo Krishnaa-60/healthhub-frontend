@@ -107,6 +107,14 @@ export interface Communication {
     from?: { id: string; name: string };
     timestamp?: string;
   };
+  recordShare?: {
+    recordId: string;
+    name: string;
+    category?: string;
+    disease?: string;
+    files?: { name: string; content: string }[];
+    dateAdded?: string;
+  };
 }
 
 export interface ContactMessage {

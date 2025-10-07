@@ -85,6 +85,11 @@ export const getUserById = (healthId: string): Promise<User | null> => {
     return apiRequest<User | null>(`/users/${healthId}`);
 };
 
+export const getUserByEmail = (email: string): Promise<{ healthId: string; name: string; role: string; email: string }> => {
+    const q = encodeURIComponent(email.trim().toLowerCase());
+    return apiRequest<{ healthId: string; name: string; role: string; email: string }>(`/users/by-email?email=${q}`);
+};
+
 export const updateUser = (healthId: string, updatedUserData: Partial<User>): Promise<User> => {
     return apiRequest<User>(`/users/${healthId}`, {
         method: 'PATCH',
@@ -198,11 +203,23 @@ export const getConversation = async (userA: string, userB: string): Promise<{ p
 export const sendChatMessage = async (
     fromId: string,
     toId: string,
-    payload: { message?: string; imageUrl?: string; replyTo?: { id: string; message?: string; imageUrl?: string; from?: { id: string; name: string }; timestamp?: string } }
+    payload: { message?: string; imageUrl?: string; replyTo?: { id: string; message?: string; imageUrl?: string; from?: { id: string; name: string }; timestamp?: string }, recordShare?: { recordId: string; name: string; category?: string; disease?: string; files?: { name: string; content: string }[]; dateAdded?: string } }
 ): Promise<Communication> => {
     return apiRequest<Communication>('/chat/send', {
         method: 'POST',
         body: JSON.stringify({ fromId, toId, ...payload })
+    });
+};
+
+export const shareRecord = async (
+    fromId: string,
+    toId: string,
+    record: { recordId: string; name: string; category?: string; disease?: string; files?: { name: string; content: string }[]; dateAdded?: string },
+    note?: string,
+): Promise<Communication> => {
+    return sendChatMessage(fromId, toId, {
+        message: note || `Shared medical record: ${record.name}`,
+        recordShare: record,
     });
 };
 

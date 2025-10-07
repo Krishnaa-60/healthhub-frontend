@@ -235,6 +235,17 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
                       {m.replyTo.imageUrl && <img src={m.replyTo.imageUrl} alt="quoted" className="mt-1 max-h-24 rounded object-contain" />}
                     </div>
                   )}
+                  {m.recordShare && (
+                    <div className={`mb-2 rounded border ${mine ? 'border-white/30' : 'border-gray-300 dark:border-[#2a323c]'} p-2 bg-white/40 dark:bg-white/5 text-gray-800 dark:text-gray-200`}>
+                      <div className="font-semibold text-sm">Shared Record: {m.recordShare.name}</div>
+                      <div className="text-[12px] opacity-80">{[m.recordShare.category, m.recordShare.disease].filter(Boolean).join(' • ')}</div>
+                      {m.recordShare.files && m.recordShare.files.length > 0 && (
+                        <div className="mt-1">
+                          <button type="button" className={`text-[12px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => window.open(m.recordShare!.files![0].content, '_blank')}>Open first file</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {m.message && <div className="whitespace-pre-wrap text-sm leading-relaxed">{m.message}</div>}
                   {m.imageUrl && (
                     <div className="mt-2">
