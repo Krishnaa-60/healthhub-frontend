@@ -30,44 +30,64 @@ const SendMessageModal: React.FC<SendMessageModalProps> = ({ doctor, patient, on
     const [isCapturing, setIsCapturing] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const videoRef = useRef<HTMLVideoElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
 
     // Effect to handle camera stream activation
     useEffect(() => {
-        const startStream = async () => {
-            if (isCapturing && videoRef.current && !videoRef.current.srcObject) {
+        const startPreferredStream = async () => {
+            if (!(isCapturing && videoRef.current)) return;
+            try {
+                // Stop existing stream
+                if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+
+                // Try facingMode exact
                 try {
-                    // Stop any existing stream before starting a new one
-                    if (streamRef.current) {
-                        streamRef.current.getTracks().forEach(track => track.stop());
+                    const s1 = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: facingMode } } });
+                    streamRef.current = s1;
+                } catch {
+                    // Try facingMode ideal
+                    try {
+                        const s2 = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+                        streamRef.current = s2;
+                    } catch {
+                        // Enumerate and pick deviceId
+                        const devices = await navigator.mediaDevices.enumerateDevices();
+                        const inputs = devices.filter(d => d.kind === 'videoinput');
+                        let deviceId: string | undefined;
+                        if (inputs.length > 1) {
+                            const back = inputs.find(d => /back|rear|environment/i.test(d.label));
+                            const front = inputs.find(d => /front|user/i.test(d.label));
+                            deviceId = (facingMode === 'environment' ? back?.deviceId : front?.deviceId) || inputs[0]?.deviceId;
+                        } else if (inputs[0]) {
+                            deviceId = inputs[0].deviceId;
+                        }
+                        const s3 = await navigator.mediaDevices.getUserMedia({ video: deviceId ? {deviceId: { exact: deviceId } } : true });
+                        streamRef.current = s3;
                     }
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    streamRef.current = stream;
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = stream;
-                    }
-                } catch (err) {
-                    setError('Could not access camera. Please check permissions.');
-                    setIsCapturing(false); // Revert state on error
                 }
+                if (videoRef.current && streamRef.current) videoRef.current.srcObject = streamRef.current;
+            } catch (err) {
+                setError('Could not access camera. Please check permissions.');
+                setIsCapturing(false);
             }
         };
-        startStream();
-
+        startPreferredStream();
+        
         // Cleanup stream on component unmount or when capture is stopped
         return () => {
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach(track => track.stop());
+                streamRef.current = null;
             }
         };
-    }, [isCapturing]);
+    }, [isCapturing, facingMode]);
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        if (!file.type.startsWith('image/')) {
+{{ ... }}
             setError('Please select an image file.');
             return;
         }
@@ -162,6 +182,7 @@ const SendMessageModal: React.FC<SendMessageModalProps> = ({ doctor, patient, on
                                             <button type="button" onClick={handleTakePhoto} className="flex-grow justify-center flex items-center gap-2 px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-opacity-80">
                                                 <CameraIcon className="w-5 h-5" /> Take Photo
                                             </button>
+                                            <button type="button" onClick={() => setFacingMode(prev => prev === 'environment' ? 'user' : 'environment')} className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-opacity-80">Flip</button>
                                             <button type="button" onClick={handleStopCapture} className="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg hover:bg-opacity-80">Cancel</button>
                                         </div>
                                     </div>

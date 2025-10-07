@@ -33,6 +33,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const loadConversation = async () => {
@@ -105,27 +106,51 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
 
   // camera lifecycle
   useEffect(() => {
-    const startStream = async () => {
-      if (isCapturing && videoRef.current && !videoRef.current.srcObject) {
+    const startPreferredStream = async () => {
+      if (!(isCapturing && videoRef.current)) return;
+      try {
+        // Stop existing
+        if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+
+        // Try facingMode exact
         try {
-          if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          streamRef.current = stream;
-          if (videoRef.current) videoRef.current.srcObject = stream;
-        } catch (e) {
-          setError('Could not access camera. Check permissions.');
-          setIsCapturing(false);
+          const s1 = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: facingMode } } });
+          streamRef.current = s1;
+        } catch {
+          // Try facingMode ideal
+          try {
+            const s2 = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+            streamRef.current = s2;
+          } catch {
+            // Enumerate devices and pick likely back camera
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoInputs = devices.filter(d => d.kind === 'videoinput');
+            let deviceId: string | undefined;
+            if (videoInputs.length > 1) {
+              const back = videoInputs.find(d => /back|rear|environment/i.test(d.label));
+              const front = videoInputs.find(d => /front|user/i.test(d.label));
+              deviceId = (facingMode === 'environment' ? back?.deviceId : front?.deviceId) || videoInputs[0]?.deviceId;
+            } else if (videoInputs[0]) {
+              deviceId = videoInputs[0].deviceId;
+            }
+            const s3 = await navigator.mediaDevices.getUserMedia({ video: deviceId ? { deviceId: { exact: deviceId } } : true });
+            streamRef.current = s3;
+          }
         }
+        if (videoRef.current && streamRef.current) videoRef.current.srcObject = streamRef.current;
+      } catch (e) {
+        setError('Could not access camera. Check permissions or try another device.');
+        setIsCapturing(false);
       }
     };
-    startStream();
+    startPreferredStream();
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(t => t.stop());
         streamRef.current = null;
       }
     };
-  }, [isCapturing]);
+  }, [isCapturing, facingMode]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -255,6 +280,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
               <video ref={videoRef} autoPlay playsInline muted className="w-full rounded-md bg-black max-h-64" />
               <div className="flex gap-2">
                 <button type="button" onClick={handleTakePhoto} className="flex items-center gap-2 px-4 py-2 bg-primary-green text-white rounded-lg"><CameraIcon className="w-5 h-5"/> Take Photo</button>
+                <button type="button" onClick={() => setFacingMode(prev => prev === 'environment' ? 'user' : 'environment')} className="px-4 py-2 bg-gray-600 text-white rounded-lg">Flip</button>
                 <button type="button" onClick={() => setIsCapturing(false)} className="px-4 py-2 bg-gray-500 text-white rounded-lg">Cancel</button>
               </div>
             </div>
