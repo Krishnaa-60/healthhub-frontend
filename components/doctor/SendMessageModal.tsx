@@ -30,6 +30,7 @@ const SendMessageModal: React.FC<SendMessageModalProps> = ({ doctor, patient, on
     const [isCapturing, setIsCapturing] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
     const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
 
@@ -86,8 +87,7 @@ const SendMessageModal: React.FC<SendMessageModalProps> = ({ doctor, patient, on
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
-
-{{ ... }}
+        if (!file.type.startsWith('image/')) {
             setError('Please select an image file.');
             return;
         }
