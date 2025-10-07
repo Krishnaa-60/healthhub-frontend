@@ -318,20 +318,27 @@ const DoctorsView: React.FC<DoctorsViewProps> = ({ user, onUserUpdate }) => {
                         }
 
                         // Group by doctor id
-                        const group = new Map<string, { doctor: User | null; count: number }>();
-                        communications.forEach(c => {
-                            const docId = c.from.id; // from doctor -> patient in patient inbox
-                            const prev = group.get(docId);
-                            group.set(docId, { doctor: prev?.doctor ?? doctors.find(d => d.healthId === docId) ?? null, count: (prev?.count ?? 0) + 1 });
+                        const group = new Map<string, { doctor: User | null; unread: number }>();
+                        (user.communications || []).forEach(c => {
+                            // Unread from doctor -> to patient
+                            if (c.from?.id && c.toId === user.healthId) {
+                                const docId = c.from.id;
+                                const prev = group.get(docId);
+                                const isUnread = c.read !== true; 
+                                group.set(docId, {
+                                    doctor: prev?.doctor ?? doctors.find(d => d.healthId === docId) ?? null,
+                                    unread: (prev?.unread ?? 0) + (isUnread ? 1 : 0),
+                                });
+                            }
                         });
 
                         const items = Array.from(group.entries()).map(([docId, info]) => ({
                             docId,
                             doctor: info.doctor,
-                            count: info.count,
+                            unread: info.unread,
                         }));
 
-                        return items.map(({ docId, doctor: doc, count }) => (
+                        return items.map(({ docId, doctor: doc, unread }) => (
                             <div
                                 key={docId}
                                 className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-dark-subtext/20 bg-white dark:bg-dark-card hover:bg-light-green dark:hover:bg-dark-bg cursor-pointer"
@@ -353,8 +360,12 @@ const DoctorsView: React.FC<DoctorsViewProps> = ({ user, onUserUpdate }) => {
                                                 <UserPlaceholderIcon className="w-5 h-5 text-gray-500 dark:text-dark-subtext" />
                                             )}
                                         </div>
-                                        <span className="absolute -top-1 -right-1 inline-flex h-3 w-3 rounded-full bg-red-500 animate-ping"></span>
-                                        <span className="absolute -top-1 -right-1 inline-flex h-3 w-3 rounded-full bg-red-500"></span>
+                                        {unread > 0 && (
+                                            <>
+                                                <span className="absolute -top-1 -right-1 inline-flex h-3 w-3 rounded-full bg-red-500 animate-ping"></span>
+                                                <span className="absolute -top-1 -right-1 inline-flex h-3 w-3 rounded-full bg-red-500"></span>
+                                            </>
+                                        )}
                                     </div>
                                     <div>
                                         <p className="font-semibold text-gray-800 dark:text-dark-text">{doc?.name || docId}</p>
@@ -362,7 +373,7 @@ const DoctorsView: React.FC<DoctorsViewProps> = ({ user, onUserUpdate }) => {
                                     </div>
                                 </div>
                                 <div>
-                                    <span className="text-xs font-bold px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">{count}</span>
+                                    <span className="text-xs font-bold px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">{unread}</span>
                                 </div>
                             </div>
                         ));
@@ -386,7 +397,12 @@ const DoctorsView: React.FC<DoctorsViewProps> = ({ user, onUserUpdate }) => {
             {messagingDoctor && (
                 <ChatModal
                     isOpen={!!messagingDoctor}
-                    onClose={() => setMessagingDoctor(null)}
+                    onClose={async () => {
+                        setMessagingDoctor(null);
+                        // Refresh patient user to update unread in UI
+                        const refreshed = await getUserById(user.healthId);
+                        if (refreshed) onUserUpdate(refreshed);
+                    }}
                     currentUser={user}
                     peerUser={messagingDoctor}
                 />

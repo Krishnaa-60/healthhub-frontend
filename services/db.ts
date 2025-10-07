@@ -208,6 +208,13 @@ export const deleteChatMessage = async (userA: string, userB: string, messageId:
     });
 };
 
+export const markChatRead = async (userId: string, peerId: string): Promise<{ modifiedCount: number }> => {
+    return apiRequest<{ modifiedCount: number }>(`/chat/mark-read`, {
+        method: 'POST',
+        body: JSON.stringify({ userId, peerId })
+    });
+};
+
 
 export const generateDietPlan = (healthCondition: string): Promise<any> => {
   return apiRequest('/ai/generate-diet-plan', {

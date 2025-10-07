@@ -99,6 +99,7 @@ export interface Communication {
   timestamp: string; // ISO string
   message?: string;
   imageUrl?: string; // base64 on send, URL when fetched
+  read?: boolean; // whether the recipient has read the message
 }
 
 export interface ContactMessage {

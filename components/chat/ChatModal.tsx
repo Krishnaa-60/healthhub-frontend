@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Communication, User } from '../../types';
-import { getConversation, sendChatMessage, deleteChatMessage } from '../../services/db';
+import { getConversation, sendChatMessage, deleteChatMessage, markChatRead } from '../../services/db';
 import CloseIcon from '../icons/CloseIcon';
 import PaperAirplaneIcon from '../icons/PaperAirplaneIcon';
 import CameraIcon from '../icons/CameraIcon';
@@ -38,6 +38,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
     try {
       const convo = await getConversation(currentUser.healthId, peerUser.healthId);
       setMessages(convo.messages);
+      // Mark as read for current user for messages from the peer
+      try {
+        await markChatRead(currentUser.healthId, peerUser.healthId);
+        // Optimistically reflect read state locally
+        setMessages(prev => prev.map(m => (m.from.id === peerUser.healthId && m.toId === currentUser.healthId) ? { ...m, read: true } : m));
+      } catch {}
       // scroll to bottom
       setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 10);
     } catch (e) {
