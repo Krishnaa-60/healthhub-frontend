@@ -80,7 +80,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
   const handleDeleteMessage = async (messageId: string) => {
     try {
       await deleteChatMessage(currentUser.healthId, peerUser.healthId, messageId);
-      setMessages(prev => prev.filter(m => m.id !== messageId));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to delete message');
     }
@@ -93,6 +92,16 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+
+  const handleDownloadAllRecordFiles = async (files: { name: string; content: string }[], recordName: string) => {
+    for (let i = 0; i < files.length; i++) {
+      await handleDownloadImage(files[i].content, files[i].name);
+      // Small delay between downloads to avoid browser blocking
+      if (i < files.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+    }
   };
 
   useEffect(() => {
@@ -260,6 +269,15 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
                               </div>
                             );
                           })}
+                          {m.recordShare.files.length > 1 && (
+                            <button
+                              type="button"
+                              className={`w-full mt-2 py-1.5 px-3 rounded text-[11px] font-semibold ${mine ? 'bg-white/80 text-primary-green hover:bg-white' : 'bg-primary-green text-white hover:bg-primary-green-dark'} transition`}
+                              onClick={() => handleDownloadAllRecordFiles(m.recordShare!.files!, m.recordShare!.name)}
+                            >
+                              ⬇ Download All Files ({m.recordShare.files.length})
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
