@@ -184,7 +184,8 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
       setInput('');
       setImageBase64(null);
       setReplyTarget(null);
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 10);
+      // Auto-scroll disabled - let users scroll manually
+      // setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 10);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to send message');
     } finally {
@@ -224,6 +225,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
         </div>
 
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 bg-light-green/40 dark:bg-[#0b0e11]">
+          <button
+            onClick={() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' })}
+            className="w-full py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100/50 dark:bg-[#151a1f]/50 rounded-lg mb-2 transition-colors"
+          >
+            ↓ Scroll to Bottom
+          </button>
           {messages.map((m) => {
             const mine = m.from.id === currentUser.healthId;
             return (

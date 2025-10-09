@@ -67,13 +67,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <div className="bg-white dark:bg-dark-card rounded-lg shadow-xl w-full max-w-3xl flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-dark-card rounded-lg shadow-xl w-full max-w-3xl flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
                 <div className="flex justify-between items-center p-4 border-b dark:border-dark-subtext/20">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-dark-text">Edit Profile</h2>
                     <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-dark-bg"><CloseIcon className="w-5 h-5 text-gray-600 dark:text-dark-subtext" /></button>
                 </div>
-                <form onSubmit={handleSubmit} className="overflow-y-auto">
-                    <div className="p-6 space-y-6 max-h-[75vh]">
+                <form onSubmit={handleSubmit} id="edit-profile-form" className="flex-1 overflow-y-auto">
+                    <div className="p-6 space-y-6">
                         <fieldset disabled={isLoading} className="space-y-6">
                             {/* Personal Details */}
                             <section>
@@ -129,13 +129,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
                             </section>
                         </fieldset>
                     </div>
-                    <div className="px-6 py-4 bg-gray-50 dark:bg-dark-bg/50 rounded-b-lg flex justify-end gap-3">
-                        <button type="button" onClick={onClose} disabled={isLoading} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-dark-text bg-white dark:bg-dark-card border border-gray-300 dark:border-dark-subtext/30 rounded-md hover:bg-gray-50 dark:hover:bg-dark-bg">Cancel</button>
-                        <button type="submit" disabled={isLoading} className="px-6 py-2 text-sm font-medium text-white bg-primary-green border border-transparent rounded-md shadow-sm hover:bg-primary-green-dark disabled:bg-gray-400">
-                            {isLoading ? 'Saving...' : 'Save Changes'}
-                        </button>
-                    </div>
                 </form>
+                <div className="sticky bottom-0 px-6 py-4 bg-gray-50 dark:bg-dark-bg/50 rounded-b-lg flex justify-end gap-3 border-t dark:border-dark-subtext/20">
+                    <button type="button" onClick={onClose} disabled={isLoading} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-dark-text bg-white dark:bg-dark-card border border-gray-300 dark:border-dark-subtext/30 rounded-md hover:bg-gray-50 dark:hover:bg-dark-bg">Cancel</button>
+                    <button type="submit" disabled={isLoading} className="px-6 py-2 text-sm font-medium text-white bg-primary-green border border-transparent rounded-md shadow-sm hover:bg-primary-green-dark disabled:bg-gray-400" form="edit-profile-form">
+                        {isLoading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
             </div>
         </div>
     );
