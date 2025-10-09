@@ -11,15 +11,10 @@ interface UploadRecordFormProps {
     onUploadSuccess: () => void;
 }
 
-// Helper to convert file to base64
-const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    // FIX: Changed the onerror handler to reject with reader.error, which is a DOMException (an Error object),
-    // instead of the ProgressEvent object, which doesn't have a 'name' or 'message' property and caused a type error.
-    reader.onerror = () => reject(reader.error);
-});
+import { toBase64Fast } from '../utils/imageOptimizer';
+
+// Use optimized base64 conversion
+const toBase64 = toBase64Fast;
 
 // Helper to convert base64 data URL to a File object
 async function dataURLtoFile(dataUrl: string, filename: string): Promise<File> {

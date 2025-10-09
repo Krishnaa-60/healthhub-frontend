@@ -15,12 +15,14 @@ interface FilePreviewModalProps {
 
 const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
     const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
     const fileUrl = file.content;
     const fileName = file.name.toLowerCase();
 
     // Reset error state when file changes
     useEffect(() => {
         setError(false);
+        setLoading(true);
     }, [fileUrl]);
 
     if (error) {
@@ -35,12 +37,24 @@ const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
 
     if (fileName.match(/\.(jpeg|jpg|gif|png|webp|svg)$/)) {
         return (
-            <img
-                src={fileUrl}
-                alt={`Preview of ${file.name}`}
-                className="max-w-full max-h-full object-contain"
-                onError={() => setError(true)}
-            />
+            <>
+                {loading && (
+                    <div className="flex items-center justify-center p-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-green"></div>
+                        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Loading image...</span>
+                    </div>
+                )}
+                <img
+                    src={fileUrl}
+                    alt={`Preview of ${file.name}`}
+                    className={`max-w-full max-h-full object-contain transition-opacity duration-200 ${loading ? 'opacity-0' : 'opacity-100'}`}
+                    onLoad={() => setLoading(false)}
+                    onError={() => {
+                        setError(true);
+                        setLoading(false);
+                    }}
+                />
+            </>
         );
     }
 
