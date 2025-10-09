@@ -1,17 +1,46 @@
 import React, { useState, useEffect } from 'react';
+import { AppNavigation } from './utils/navigation';
 import { User, UserRole, AuthMode, AppView } from './types';
 import { getUserById } from './services/db';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
-import PatientDashboard from './pages/PatientDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 
 const App: React.FC = () => {
     const [isSplashing, setIsSplashing] = useState(true);
-    const [user, setUser] = useState<User | null>(null);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+    // Initialize navigation system
+    useEffect(() => {
+        // Prevent default browser back behavior for app navigation
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (AppNavigation.getStackLength() > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+
+        // Handle browser back button
+        const handlePopState = (e: PopStateEvent) => {
+            e.preventDefault();
+            const handled = AppNavigation.goBack();
+            if (!handled) {
+                // Only allow browser to close if no app navigation left
+                window.history.back();
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
     const [isLoading, setIsLoading] = useState(true);
     const [view, setView] = useState<AppView>('auth');
     const [authMode, setAuthMode] = useState<AuthMode>(AuthMode.LOGIN);
