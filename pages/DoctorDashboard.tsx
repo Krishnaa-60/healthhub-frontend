@@ -1,35 +1,52 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { AppNavigation } from '../utils/navigation';
 import { User } from '../types';
-import LogoIcon from '../components/icons/LogoIcon';
-import DoctorSidebar from '../components/doctor/DoctorSidebar';
-import DoctorDashboardHome from '../components/doctor/DoctorDashboardHome';
-import PatientManagementView from '../components/doctor/PatientManagementView';
+import { updateUser, getUserById } from '../services/db';
 import CommunicationsView from '../components/doctor/CommunicationsView';
-import UserDetailView from '../components/admin/UserDetailView'; // Reusing admin's detail view
-import ChatModal from '../components/chat/ChatModal';
-import { getUserById, updateUser } from '../services/db';
 import DoctorAppointmentsView from '../components/doctor/DoctorAppointmentsView';
 import DoctorProfileView from '../components/doctor/DoctorProfileView';
+// import UserDetailView from '../components/UserDetailView'; // Component may not exist yet
+import ChatModal from '../components/chat/ChatModal';
 import Toast from '../components/Toast';
-import UploadIcon from '../components/icons/UploadIcon';
 import SpinnerIcon from '../components/icons/SpinnerIcon';
 import UserPlaceholderIcon from '../components/icons/UserPlaceholderIcon';
+import UploadIcon from '../components/icons/UploadIcon';
 import HomeIcon from '../components/icons/HomeIcon';
 import PersonIcon from '../components/icons/PersonIcon';
 import UsersIcon from '../components/icons/UsersIcon';
 import CalendarIcon from '../components/icons/CalendarIcon';
 import MailIcon from '../components/icons/MailIcon';
+import LogoIcon from '../components/icons/LogoIcon';
+import DoctorSidebar from '../components/doctor/DoctorSidebar';
+import DoctorDashboardHome from '../components/doctor/DoctorDashboardHome';
+import PatientManagementView from '../components/doctor/PatientManagementView';
+
+export type DoctorView = 'dashboard' | 'patients' | 'communications' | 'appointments' | 'profile';
 
 interface DoctorDashboardProps {
   doctor: User;
   onLogout: () => void;
 }
 
-export type DoctorView = 'dashboard' | 'patients' | 'communications' | 'appointments' | 'profile';
-
 const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ doctor: initialDoctor, onLogout }) => {
   const [doctor, setDoctor] = useState<User>(initialDoctor);
   const [activeView, setActiveView] = useState<DoctorView>('dashboard');
+
+  // Setup back button navigation
+  useEffect(() => {
+    const cleanup = AppNavigation.setupBackButtonHandler((path) => {
+      if (path === '/') {
+        setActiveView('dashboard');
+      }
+    });
+    return cleanup;
+  }, []);
+
+  // Track navigation when view changes
+  useEffect(() => {
+    AppNavigation.pushState(`/doctor/${activeView}`, `Doctor - ${activeView}`);
+  }, [activeView]);
+
   const [viewingPatient, setViewingPatient] = useState<User | null>(null);
   const [messagingPatient, setMessagingPatient] = useState<User | null>(null);
   const [toastMessage, setToastMessage] = useState('');
@@ -244,18 +261,18 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ doctor: initialDoctor
           </div>
         </nav>
 
-        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-24 lg:pb-8 overflow-y-auto">
+        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-32 lg:pb-8 overflow-y-auto">
           {renderContent()}
         </main>
       </div>
       
-      {viewingPatient && (
+      {/* {viewingPatient && (
         <UserDetailView 
           user={viewingPatient} 
           onClose={() => setViewingPatient(null)} 
           onSendMessage={handleOpenSendMessage}
         />
-      )}
+      )} */}
 
       {messagingPatient && (
         <ChatModal

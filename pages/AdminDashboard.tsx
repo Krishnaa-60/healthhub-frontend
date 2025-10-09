@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { AppNavigation } from '../utils/navigation';
 import { User } from '../types';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import AdminDashboardHome from '../components/admin/AdminDashboardHome';
@@ -26,6 +27,21 @@ export type AdminView = 'dashboard' | 'users' | 'patients' | 'doctors' | 'admins
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin: initialAdmin, onLogout }) => {
   const [admin, setAdmin] = useState<User>(initialAdmin);
   const [activeView, setActiveView] = useState<AdminView>('dashboard');
+
+  // Setup back button navigation
+  useEffect(() => {
+    const cleanup = AppNavigation.setupBackButtonHandler((path) => {
+      if (path === '/') {
+        setActiveView('dashboard');
+      }
+    });
+    return cleanup;
+  }, []);
+
+  // Track navigation when view changes
+  useEffect(() => {
+    AppNavigation.pushState(`/admin/${activeView}`, `Admin - ${activeView}`);
+  }, [activeView]);
   const [viewingUser, setViewingUser] = useState<User | null>(null);
   const [toastMessage, setToastMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -219,7 +235,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ admin: initialAdmin, on
           </div>
         </nav>
 
-        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-24 lg:pb-8 overflow-y-auto">
+        <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-32 lg:pb-8 overflow-y-auto">
           {renderContent()}
         </main>
       </div>

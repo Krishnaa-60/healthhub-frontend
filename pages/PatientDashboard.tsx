@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { AppNavigation } from '../utils/navigation';
 import { User, DashboardView, MedicalRecord } from '../types';
 import { MEDICAL_RECORD_CATEGORIES } from '../constants';
 import LogoIcon from '../components/icons/LogoIcon';
@@ -161,6 +162,22 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
     const [showFullDashboard, setShowFullDashboard] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [toastMessage, setToastMessage] = useState('');
+
+    // Setup back button navigation
+    useEffect(() => {
+        const cleanup = AppNavigation.setupBackButtonHandler((path) => {
+            // Handle app navigation based on path
+            if (path === '/') {
+                setActiveView('dashboard');
+            }
+        });
+        return cleanup;
+    }, []);
+
+    // Track navigation when view changes
+    useEffect(() => {
+        AppNavigation.pushState(`/patient/${activeView}`, `Patient - ${activeView}`);
+    }, [activeView]);
     // --- Helpers for accurate counts (timezone-safe)
     const parseLocalDateTime = (date: string, time: string): Date | null => {
         if (!date || !time) return null;
@@ -355,8 +372,8 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center text-gray-500 dark:text-dark-subtext py-8">
-                                    <DocumentIcon className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-gray-300 dark:text-dark-subtext/30" />
+                                <div className="text-center text-gray-500 dark:text-gray-100 py-8">
+                                    <DocumentIcon className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-gray-300 dark:text-gray-100/30" />
                                     <h3 className="text-base sm:text-lg font-semibold">No Medical Records Found</h3>
                                     <p className="text-sm">You have not uploaded any medical records yet.</p>
                                 </div>
@@ -401,7 +418,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                         </div>
                         <div className="text-left hidden md:block">
                             <div className="font-semibold text-sm text-gray-800 dark:text-dark-text">{user.name}</div>
-                            <div className="text-xs text-gray-500 dark:text-dark-subtext">{user.healthId}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-100">{user.healthId}</div>
                         </div>
                     </div>
                     <button 
@@ -418,7 +435,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                 <div className="flex flex-grow overflow-hidden">
                     {/* Sidebar */}
                     <aside className="hidden lg:flex w-56 xl:w-64 bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm p-3 xl:p-4 border-r border-gray-200/80 dark:border-dark-subtext/20 flex-col flex-shrink-0">
-                        <div className="text-gray-500 dark:text-dark-subtext text-xs font-semibold uppercase tracking-wider mb-3 px-2">Menu</div>
+                        <div className="text-gray-500 dark:text-gray-100 text-xs font-semibold uppercase tracking-wider mb-3 px-2">Menu</div>
                         <nav className="flex flex-col space-y-2">
                             {navItems.map(item => (
                                 <button
@@ -427,7 +444,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                                     className={`flex items-center space-x-3 px-3 xl:px-4 py-2.5 xl:py-3 rounded-lg text-xs xl:text-sm font-semibold transition-all duration-200 transform hover:translate-x-1 ${
                                         activeView === item.id 
                                         ? 'bg-primary-green dark:bg-dark-accent text-white dark:text-dark-bg shadow-lg' 
-                                        : 'text-gray-600 dark:text-dark-subtext hover:bg-light-green dark:hover:bg-dark-bg'
+                                        : 'text-gray-600 dark:text-gray-100 hover:bg-light-green dark:hover:bg-dark-bg'
                                     }`}
                                     aria-current={activeView === item.id}
                                 >
@@ -448,7 +465,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                                     className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-xl transition-all duration-300 min-w-[75px] transform hover:scale-105 ${
                                         activeView === item.id 
                                         ? 'text-white dark:text-dark-bg bg-gradient-to-br from-primary-green to-teal-500 dark:from-dark-accent dark:to-teal-400 shadow-lg scale-105' 
-                                        : 'text-gray-700 dark:text-dark-subtext bg-white/60 dark:bg-dark-bg/60 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
+                                        : 'text-gray-700 dark:text-gray-100 bg-white/60 dark:bg-dark-bg/80 hover:bg-green-100/80 dark:hover:bg-dark-accent/20 shadow-md'
                                     }`}
                                     aria-current={activeView === item.id}
                                 >
@@ -464,7 +481,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                     </nav>
 
                     {/* Main Content */}
-                    <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-24 lg:pb-8 overflow-y-auto relative bg-gradient-to-br from-light-green via-teal-50 to-blue-50 dark:bg-gradient-to-br dark:from-dark-bg dark:via-slate-900 dark:to-dark-card">
+                    <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 pb-32 lg:pb-8 overflow-y-auto relative bg-gradient-to-br from-light-green via-teal-50 to-blue-50 dark:bg-gradient-to-br dark:from-dark-bg dark:via-slate-900 dark:to-dark-card">
                         {/* <DashboardBackground /> */}
                         <div className="relative z-10">
                             {renderContent()}
@@ -476,7 +493,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                      <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%2327C690\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
                     <div className="z-10 relative max-w-4xl mx-auto w-full px-2">
                         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-800 dark:text-dark-text">Welcome Back, {user.name.split(' ')[0]}!</h1>
-                        <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-dark-subtext mt-3 sm:mt-4 max-w-xl mx-auto px-4">Here's a quick summary of your health dashboard.</p>
+                        <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-100 mt-3 sm:mt-4 max-w-xl mx-auto px-4">Here's a quick summary of your health dashboard.</p>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8 md:mt-10 text-left">
                            <StatCard icon={HeartbeatIcon} title="Upcoming Appointments" value={upcomingAppointmentsCount} colorClass="bg-gradient-to-br from-brand-blue to-accent-blue" />
@@ -524,3 +541,7 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
 };
 
 export default PatientDashboard;
+
+
+
+
