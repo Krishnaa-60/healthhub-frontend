@@ -5,13 +5,12 @@ import TrashIcon from './icons/TrashIcon';
 import PlusIcon from './icons/PlusIcon';
 import { MEDICAL_RECORD_CATEGORIES } from '../constants';
 import CameraIcon from './icons/CameraIcon';
+import { toBase64Fast } from '../utils/imageOptimizer';
 
 interface UploadRecordFormProps {
     user: User;
     onUploadSuccess: () => void;
 }
-
-import { toBase64Fast } from '../utils/imageOptimizer';
 
 // Use optimized base64 conversion
 const toBase64 = toBase64Fast;
