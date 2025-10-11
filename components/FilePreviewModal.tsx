@@ -16,13 +16,43 @@ interface FilePreviewModalProps {
 const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [displayUrl, setDisplayUrl] = useState<string>('');
     const fileUrl = file.content;
     const fileName = file.name.toLowerCase();
 
-    // Reset error state when file changes
+    // Resolve the actual URL to use for viewing (handles protected links via blob URLs)
     useEffect(() => {
+        let revokedUrl: string | null = null;
+        let cancelled = false;
         setError(false);
         setLoading(true);
+
+        const setup = async () => {
+            try {
+                // Data URL can be used directly
+                if (fileUrl.startsWith('data:')) {
+                    if (!cancelled) setDisplayUrl(fileUrl);
+                    return;
+                }
+                // For http/https urls: fetch the blob and convert to object URL to avoid CORS/link issues
+                const resp = await fetch(fileUrl);
+                if (!resp.ok) throw new Error('Failed to load file');
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                revokedUrl = url;
+                if (!cancelled) setDisplayUrl(url);
+            } catch (e) {
+                if (!cancelled) setError(true);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+        setup();
+
+        return () => {
+            cancelled = true;
+            if (revokedUrl) URL.revokeObjectURL(revokedUrl);
+        };
     }, [fileUrl]);
 
     if (error) {
@@ -45,7 +75,7 @@ const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
                     </div>
                 )}
                 <img
-                    src={fileUrl}
+                    src={displayUrl}
                     alt={`Preview of ${file.name}`}
                     className={`max-w-full max-h-full object-contain transition-opacity duration-200 ${loading ? 'opacity-0' : 'opacity-100'}`}
                     onLoad={() => setLoading(false)}
@@ -60,12 +90,20 @@ const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
 
     if (fileName.endsWith('.pdf')) {
         return (
-             <iframe
-                src={fileUrl}
-                title={`Preview of ${file.name}`}
-                className="w-full h-full"
-                frameBorder="0"
-            />
+            <>
+                {loading && (
+                    <div className="flex items-center justify-center p-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-green"></div>
+                        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Loading PDF...</span>
+                    </div>
+                )}
+                <iframe
+                    src={displayUrl}
+                    title={`Preview of ${file.name}`}
+                    className="w-full h-full"
+                    frameBorder="0"
+                />
+            </>
         );
     }
 
@@ -91,17 +129,39 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ user, record, onClo
     const handleDownload = async () => {
         setIsDownloading(true);
         try {
-            const response = await fetch(activeFile.content);
-            if (!response.ok) throw new Error('Network response was not ok.');
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', activeFile.name);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode?.removeChild(link);
-            window.URL.revokeObjectURL(url);
+            const content = activeFile.content;
+            // If it's a data URL (base64), construct a Blob directly
+            if (content.startsWith('data:')) {
+                const byteString = atob(content.split(',')[1]);
+                const mimeString = content.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                const blob = new Blob([ab], { type: mimeString });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', activeFile.name);
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode?.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } else {
+                // Otherwise fetch from URL then download
+                const response = await fetch(content);
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', activeFile.name);
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode?.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }
         } catch (error) {
             console.error('Download failed:', error);
             alert('Could not download the file. Please try again.');
