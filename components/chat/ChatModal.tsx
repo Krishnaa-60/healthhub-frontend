@@ -86,18 +86,34 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
     }
   };
 
-  const handleDownloadImage = (url: string, filename: string) => {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  const handlePreviewPdf = (content: string, filename: string) => {
+    try {
+      // Check if content is base64 or URL
+      if (content.startsWith('data:')) {
+        // Base64 content - create blob and open
+        const byteString = atob(content.split(',')[1]);
+        const mimeString = content.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeString });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        URL.revokeObjectURL(url);
+      } else {
+        // URL content - open directly
+        window.open(content, '_blank');
+      }
+    } catch (error) {
+      setError('Failed to preview PDF. Please download and open locally.');
+    }
   };
 
   const handleDownloadAllRecordFiles = async (files: { name: string; content: string }[], recordName: string) => {
     for (let i = 0; i < files.length; i++) {
-      await handleDownloadImage(files[i].content, files[i].name);
+      await handleDownloadFile(files[i].content, files[i].name);
       // Small delay between downloads to avoid browser blocking
       if (i < files.length - 1) {
         await new Promise(resolve => setTimeout(resolve, 300));
@@ -262,11 +278,11 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
                                     <img src={file.content} alt={file.name} className="max-h-40 rounded object-contain cursor-pointer" onClick={() => setPreviewImage(file.content)} />
                                     <div className="flex gap-2 mt-1">
                                       <button type="button" className={`text-[10px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => setPreviewImage(file.content)}>View</button>
-                                      <button type="button" className={`text-[10px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => handleDownloadImage(file.content, file.name)}>Download</button>
+                                      <button type="button" className={`text-[10px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => handleDownloadFile(file.content, file.name)}>Download</button>
                                     </div>
                                   </>
                                 ) : (
-                                  <button type="button" className={`text-[11px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => handleDownloadImage(file.content, file.name)}>Download {file.name}</button>
+                                  <button type="button" className={`text-[11px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => handleDownloadFile(file.content, file.name)}>Download {file.name}</button>
                                 )}
                               </div>
                             );
@@ -290,7 +306,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
                       <img onClick={() => setPreviewImage(m.imageUrl!)} src={m.imageUrl} alt="attachment" className="rounded-md max-h-64 object-contain cursor-pointer" />
                       <div className="flex gap-2 mt-1 text-[11px]">
                         <button type="button" className={`${mine ? 'text-white/90' : 'text-gray-600 dark:text-gray-300'} underline`} onClick={() => setPreviewImage(m.imageUrl!)}>Preview</button>
-                        <button type="button" className={`${mine ? 'text-white/90' : 'text-gray-600 dark:text-gray-300'} underline`} onClick={() => handleDownloadImage(m.imageUrl!, `attachment-${m.id}.png`)}>Download</button>
+                        <button type="button" className={`${mine ? 'text-white/90' : 'text-gray-600 dark:text-gray-300'} underline`} onClick={() => handleDownloadFile(m.imageUrl!, `attachment-${m.id}.png`)}>Download</button>
                       </div>
                     </div>
                   )}
@@ -362,7 +378,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
             <div className="relative max-w-4xl max-h-[90vh]" onClick={e => e.stopPropagation()}>
               <img src={previewImage} alt="preview" className="max-w-full max-h-[90vh] object-contain rounded-lg" />
               <div className="absolute top-2 right-2 flex gap-2">
-                <button className="px-3 py-1.5 rounded bg-white/90 text-gray-800" onClick={() => handleDownloadImage(previewImage, 'image.png')}>Download</button>
+                <button className="px-3 py-1.5 rounded bg-white/90 text-gray-800" onClick={() => handleDownloadFile(previewImage, 'image.png')}>Download</button>
                 <button className="p-2 rounded-full bg-white/90 text-gray-800" onClick={() => setPreviewImage(null)}><CloseIcon className="w-5 h-5"/></button>
               </div>
             </div>
