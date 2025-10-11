@@ -35,14 +35,18 @@ const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
                     return;
                 }
                 // For http/https urls: fetch the blob and convert to object URL to avoid CORS/link issues
-                const resp = await fetch(fileUrl);
+                const resp = await fetch(fileUrl, { credentials: 'include' });
                 if (!resp.ok) throw new Error('Failed to load file');
                 const blob = await resp.blob();
                 const url = URL.createObjectURL(blob);
                 revokedUrl = url;
                 if (!cancelled) setDisplayUrl(url);
             } catch (e) {
-                if (!cancelled) setError(true);
+                // Fallback: try to display original URL (may work if browser session allows it)
+                if (!cancelled) {
+                    setDisplayUrl(fileUrl);
+                    setError(false);
+                }
             } finally {
                 if (!cancelled) setLoading(false);
             }
