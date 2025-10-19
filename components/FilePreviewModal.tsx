@@ -93,6 +93,23 @@ const FileViewer: React.FC<{ file: MedicalRecordFile }> = ({ file }) => {
     }
 
     if (fileName.endsWith('.pdf')) {
+        const isBlobUrl = displayUrl.startsWith('blob:');
+        if (!isBlobUrl && !loading) {
+            // Fallback: cannot embed remote PDF, show open-in-new-tab action
+            return (
+                <div className="text-center p-8 bg-gray-50 dark:bg-dark-bg rounded-lg flex flex-col items-center justify-center gap-3">
+                    <DocumentIcon className="w-16 h-16 mx-auto text-gray-300 dark:text-dark-subtext/30" />
+                    <h3 className="text-lg font-semibold text-gray-700 dark:text-dark-text">PDF preview not available</h3>
+                    <p className="text-sm text-gray-500 dark:text-dark-subtext">This PDF cannot be embedded. Please open it in a new tab.</p>
+                    <button
+                        onClick={() => window.open(displayUrl, '_blank', 'noopener')}
+                        className="px-4 py-2 bg-primary-green text-white rounded-md font-semibold hover:bg-primary-green-dark"
+                    >
+                        Open PDF
+                    </button>
+                </div>
+            );
+        }
         return (
             <>
                 {loading && (
@@ -153,8 +170,8 @@ const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ user, record, onClo
                 link.parentNode?.removeChild(link);
                 window.URL.revokeObjectURL(url);
             } else {
-                // Otherwise fetch from URL then download
-                const response = await fetch(content);
+                // Otherwise fetch from URL then download (include credentials for protected endpoints)
+                const response = await fetch(content, { credentials: 'include' });
                 if (!response.ok) throw new Error('Network response was not ok.');
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);

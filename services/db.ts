@@ -13,6 +13,7 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
                 'Content-Type': 'application/json',
                 ...options.headers,
             },
+            credentials: 'include',
             ...options,
         });
 

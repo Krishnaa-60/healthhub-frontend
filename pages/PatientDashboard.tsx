@@ -256,12 +256,22 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
         }
     };
     
-    const handleOtpSuccess = () => {
+    const handleOtpSuccess = async () => {
         if (verifyingRecord) {
-            // Also push history state after successful OTP verification
-            window.history.pushState({ modal: 'recordPreview' }, '');
-            setPreviewingRecord(verifyingRecord);
-            setVerifyingRecord(null);
+            try {
+                // Re-fetch records to get unlocked file URLs/contents
+                const refreshed = await getMedicalRecords(user.healthId);
+                const updated = refreshed.find(r => r.recordId === verifyingRecord.recordId);
+                // Push history state before opening modal
+                window.history.pushState({ modal: 'recordPreview' }, '');
+                setPreviewingRecord(updated || verifyingRecord);
+            } catch (e) {
+                // Fallback to existing object if refresh fails
+                window.history.pushState({ modal: 'recordPreview' }, '');
+                setPreviewingRecord(verifyingRecord);
+            } finally {
+                setVerifyingRecord(null);
+            }
         }
     };
 
@@ -274,17 +284,37 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
         const fileToDownload = record.files[0];
         
         try {
-            const response = await fetch(fileToDownload.content);
-            if (!response.ok) throw new Error('Network response was not ok.');
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', fileToDownload.name);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode?.removeChild(link);
-            window.URL.revokeObjectURL(url);
+            const content = fileToDownload.content;
+            if (content.startsWith('data:')) {
+                const byteString = atob(content.split(',')[1]);
+                const mimeString = content.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                const blob = new Blob([ab], { type: mimeString });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', fileToDownload.name);
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode?.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } else {
+                const response = await fetch(content, { credentials: 'include' });
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', fileToDownload.name);
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode?.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }
         } catch (error) {
             console.error('Download failed:', error);
             alert('Could not download the file. Please try again.');
