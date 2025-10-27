@@ -336,10 +336,9 @@ const ChatModal: React.FC<ChatModalProps> = ({ currentUser, peerUser, isOpen, on
                                 <div className="text-[11px] font-medium mb-1">{file.name}</div>
                                 {isImage ? (
                                   <>
-                                    <img src={file.content} alt={file.name} className="max-h-40 rounded object-contain cursor-pointer" onClick={() => openPreview(file.content)} />
-                                    <div className="flex gap-2 mt-1">
-                                      <button type="button" className={`text-[10px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => openPreview(file.content)}>View</button>
-                                      <button type="button" className={`text-[10px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => handleDownloadFile(file.content, file.name)}>Download</button>
+                                    <div className="flex gap-2">
+                                      <button type="button" className={`text-[11px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => openPreview(file.content)}>View image</button>
+                                      <button type="button" className={`text-[11px] underline ${mine ? 'text-white/90' : 'text-blue-600 dark:text-blue-300'}`} onClick={() => handleDownloadFile(file.content, file.name)}>Download</button>
                                     </div>
                                   </>
                                 ) : (

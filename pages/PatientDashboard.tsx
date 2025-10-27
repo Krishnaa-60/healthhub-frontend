@@ -249,10 +249,16 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
     const handlePreviewClick = (record: MedicalRecord) => {
         if (record.isLocked) {
             setVerifyingRecord(record);
-        } else {
-            // Push a state to history when opening the modal
+            return;
+        }
+        // Ensure there is at least one file with content; if not, fall back to download
+        const hasViewable = Array.isArray(record.files) && record.files.length > 0 && typeof record.files[0].content === 'string' && record.files[0].content.length > 0;
+        if (hasViewable) {
             window.history.pushState({ modal: 'recordPreview' }, '');
             setPreviewingRecord(record);
+        } else {
+            // No inline content present; try downloading the first file directly
+            handleDownloadRecord(record);
         }
     };
     
@@ -435,9 +441,9 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
     };
 
     return (
-        <div className="w-full h-screen bg-light-gray-bg dark:bg-dark-bg flex flex-col">
+        <div className="w-full h-screen bg-gray-50 flex flex-col">
             {/* Dashboard Header */}
-            <header className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm shadow-sm p-2 sm:p-3 flex justify-between items-center flex-shrink-0 z-20 border-b border-gray-200/80 dark:border-dark-subtext/20">
+            <header className="bg-white/80 backdrop-blur-sm shadow-sm p-2 sm:p-3 flex justify-between items-center flex-shrink-0 z-20 border-b border-gray-200">
                 <button 
                     onClick={() => {
                         setShowFullDashboard(false);
@@ -447,23 +453,23 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
                     aria-label="Go to welcome screen"
                 >
                     <LogoIcon className="w-8 h-8 sm:w-10 sm:h-10" />
-                    <span className="text-base sm:text-xl font-bold text-gray-800 dark:text-dark-text tracking-wide">Health Hub</span>
+                    <span className="text-base sm:text-xl font-bold text-gray-800 tracking-wide">Health Hub</span>
                 </button>
                 <div className="flex items-center space-x-2 sm:space-x-4">
-                    <div className="flex items-center space-x-2 sm:space-x-3 rounded-full p-1 pr-2 sm:pr-3 bg-gray-100/0">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary-green rounded-full p-0.5 flex-shrink-0 ring-2 ring-white shadow-md">
+                    <div className="flex items-center space-x-2 sm:space-x-3 rounded-full p-1 pr-2 sm:pr-3 bg-gray-100">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full p-0.5 flex-shrink-0 ring-2 ring-white shadow-md">
                             {user.avatar ? 
                                 <img src={user.avatar} alt="User Avatar" className="w-full h-full rounded-full object-cover" /> 
                                 : <PatientIcon className="text-white" />}
                         </div>
                         <div className="text-left hidden md:block">
-                            <div className="font-semibold text-sm text-gray-800 dark:text-dark-text">{user.name}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-100">{user.healthId}</div>
+                            <div className="font-semibold text-sm text-gray-800">{user.name}</div>
+                            <div className="text-xs text-gray-500">{user.healthId}</div>
                         </div>
                     </div>
                     <button 
                       onClick={onLogout} 
-                      className="text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-semibold py-1.5 sm:py-2 px-2 sm:px-3 rounded-md transition-colors"
+                      className="text-xs sm:text-sm text-red-600 hover:bg-red-50 font-semibold py-1.5 sm:py-2 px-2 sm:px-3 rounded-md transition-colors"
                       aria-label="Logout"
                     >
                         Logout
