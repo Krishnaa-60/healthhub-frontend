@@ -328,16 +328,24 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
 
         const originalRecords = [...medicalRecords];
         // Optimistic UI update for immediate feedback
-        const updatedRecords = medicalRecords.filter(r => r.recordId !== recordId);
-        setMedicalRecords(updatedRecords);
+        setMedicalRecords(prev => prev.filter(r => r.recordId !== recordId));
 
         try {
             await deleteMedicalRecord(user.healthId, recordId);
             setToastMessage('Medical record deleted successfully.');
-            // Update the parent component's state if needed
-            if (onUserUpdate) {
-                const updatedUserRecords = user.medicalRecords?.filter(r => r.recordId !== recordId) || [];
-                onUserUpdate({ ...user, medicalRecords: updatedUserRecords });
+            
+            // Refresh records from server to ensure consistency
+            try {
+                const freshRecords = await getMedicalRecords(user.healthId);
+                setMedicalRecords(freshRecords);
+                
+                // Update the parent component's state if needed
+                if (onUserUpdate) {
+                    onUserUpdate({ ...user, medicalRecords: freshRecords });
+                }
+            } catch (fetchError) {
+                console.error('Failed to refresh records:', fetchError);
+                // Even if refresh fails, we've already updated the UI optimistically
             }
         } catch (err) {
             console.error('Failed to delete record:', err);
