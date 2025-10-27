@@ -328,15 +328,17 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
 
         const originalRecords = [...medicalRecords];
         // Optimistic UI update for immediate feedback
-        setMedicalRecords(prev => prev.filter(r => r.recordId !== recordId));
+        const updatedRecords = medicalRecords.filter(r => r.recordId !== recordId);
+        setMedicalRecords(updatedRecords);
 
         try {
             await deleteMedicalRecord(user.healthId, recordId);
             setToastMessage('Medical record deleted successfully.');
-            // Update the main user object to reflect the change on the welcome screen
-            const updatedUserRecords = user.medicalRecords?.filter(r => r.recordId !== recordId);
-            onUserUpdate({ ...user, medicalRecords: updatedUserRecords });
-
+            // Update the parent component's state if needed
+            if (onUserUpdate) {
+                const updatedUserRecords = user.medicalRecords?.filter(r => r.recordId !== recordId) || [];
+                onUserUpdate({ ...user, medicalRecords: updatedUserRecords });
+            }
         } catch (err) {
             console.error('Failed to delete record:', err);
             setToastMessage('Error: Could not delete record.');
