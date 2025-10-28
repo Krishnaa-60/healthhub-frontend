@@ -15,6 +15,7 @@ const App: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [view, setView] = useState<AppView>('auth');
     const [authMode, setAuthMode] = useState<AuthMode>(AuthMode.LOGIN);
+    const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.PATIENT);
     const [theme, setTheme] = useState(() => {
         if (typeof window !== 'undefined' && window.localStorage) {
             // Use stored theme if it exists, otherwise default to 'light'
@@ -151,7 +152,7 @@ const App: React.FC = () => {
                 return <ContactPage />;
             case 'auth':
             default:
-                return <HomePage authMode={authMode} setAuthMode={setAuthMode} onLoginSuccess={handleLoginSuccess} theme={theme as 'light' | 'dark'} />;
+                return <HomePage authMode={authMode} setAuthMode={setAuthMode} onLoginSuccess={handleLoginSuccess} theme={theme as 'light' | 'dark'} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />;
         }
     };
     

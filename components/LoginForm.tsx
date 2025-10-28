@@ -7,9 +7,10 @@ import { authenticateUser, authenticateAdmin } from '../services/db';
 interface LoginFormProps {
   setAuthMode: (mode: AuthMode) => void;
   onLoginSuccess: (user: User) => void;
+  setSelectedRole: (role: UserRole) => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess, setSelectedRole }) => {
   const [role, setRole] = useState<UserRole>(UserRole.PATIENT);
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
@@ -50,6 +51,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess }) =>
       type="button"
       onClick={() => {
         setRole(value);
+        setSelectedRole(value);
         setError('');
         setUserId('');
         setPassword('');

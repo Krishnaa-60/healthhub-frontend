@@ -1,6 +1,6 @@
 import React from 'react';
 import AuthPage from './AuthPage';
-import { AuthMode, User } from '../types';
+import { AuthMode, User, UserRole } from '../types';
 import Illustration from '../components/icons/Illustration';
 
 interface HomePageProps {
@@ -8,14 +8,16 @@ interface HomePageProps {
   setAuthMode: (mode: AuthMode) => void;
   onLoginSuccess: (user: User) => void;
   theme: 'light' | 'dark';
+  selectedRole: UserRole;
+  setSelectedRole: (role: UserRole) => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ authMode, setAuthMode, onLoginSuccess, theme }) => {
+const HomePage: React.FC<HomePageProps> = ({ authMode, setAuthMode, onLoginSuccess, theme, selectedRole, setSelectedRole }) => {
   if (authMode === AuthMode.REGISTER) {
     return (
       <main className="container mx-auto flex-grow flex items-center justify-center p-3 sm:p-4 md:p-6">
         <div className="w-full flex justify-center">
-            <AuthPage authMode={authMode} setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} />
+            <AuthPage authMode={authMode} setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
         </div>
       </main>
     );
@@ -28,7 +30,7 @@ const HomePage: React.FC<HomePageProps> = ({ authMode, setAuthMode, onLoginSucce
           <Illustration className="w-full max-w-lg h-auto" theme={theme} />
         </div>
         <div className="flex justify-center md:justify-end">
-          <AuthPage authMode={authMode} setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} />
+          <AuthPage authMode={authMode} setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
         </div>
       </div>
     </main>

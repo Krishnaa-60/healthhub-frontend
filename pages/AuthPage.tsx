@@ -1,5 +1,5 @@
 import React from 'react';
-import { AuthMode, User } from '../types';
+import { AuthMode, User, UserRole } from '../types';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
 import ForgotPasswordForm from '../components/ForgotPasswordForm';
@@ -8,19 +8,21 @@ interface AuthPageProps {
   authMode: AuthMode;
   setAuthMode: (mode: AuthMode) => void;
   onLoginSuccess: (user: User) => void;
+  selectedRole: UserRole;
+  setSelectedRole: (role: UserRole) => void;
 }
 
-const AuthPage: React.FC<AuthPageProps> = ({ authMode, setAuthMode, onLoginSuccess }) => {
+const AuthPage: React.FC<AuthPageProps> = ({ authMode, setAuthMode, onLoginSuccess, selectedRole, setSelectedRole }) => {
 
   const renderForm = () => {
     switch (authMode) {
       case AuthMode.REGISTER:
-        return <RegisterForm setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} />;
+        return <RegisterForm setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} selectedRole={selectedRole} />;
       case AuthMode.FORGOT_PASSWORD:
         return <ForgotPasswordForm setAuthMode={setAuthMode} />;
       case AuthMode.LOGIN:
       default:
-        return <LoginForm setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} />;
+        return <LoginForm setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} setSelectedRole={setSelectedRole} />;
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { AuthMode, User } from '../types';
+import { AuthMode, User, UserRole } from '../types';
 import { ADMIN_EMAIL, SECURITY_QUESTIONS } from '../constants';
 import EyeIcon from './icons/EyeIcon';
 import CalendarIcon from './icons/CalendarIcon';
@@ -10,10 +10,13 @@ import { registerUser } from '../services/db';
 interface RegisterFormProps {
   setAuthMode: (mode: AuthMode) => void;
   onLoginSuccess: (user: User) => void;
+  selectedRole: UserRole;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onLoginSuccess }) => {
-  const [registrationType, setRegistrationType] = useState<'patient' | 'doctor'>('patient');
+const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onLoginSuccess, selectedRole }) => {
+  const [registrationType, setRegistrationType] = useState<'patient' | 'doctor'>(
+    selectedRole === UserRole.DOCTOR ? 'doctor' : 'patient'
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [diseases, setDiseases] = useState([{ name: '', years: '' }]);

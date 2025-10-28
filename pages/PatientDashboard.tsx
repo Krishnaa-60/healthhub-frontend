@@ -249,16 +249,10 @@ const PatientDashboard: React.FC<PatientDashboardProps> = ({ user, onLogout, onU
     const handlePreviewClick = (record: MedicalRecord) => {
         if (record.isLocked) {
             setVerifyingRecord(record);
-            return;
-        }
-        // Ensure there is at least one file with content; if not, fall back to download
-        const hasViewable = Array.isArray(record.files) && record.files.length > 0 && typeof record.files[0].content === 'string' && record.files[0].content.length > 0;
-        if (hasViewable) {
+        } else {
+            // Push a state to history when opening the modal
             window.history.pushState({ modal: 'recordPreview' }, '');
             setPreviewingRecord(record);
-        } else {
-            // No inline content present; try downloading the first file directly
-            handleDownloadRecord(record);
         }
     };
     
