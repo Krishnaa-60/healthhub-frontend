@@ -11,9 +11,10 @@ interface RegisterFormProps {
   setAuthMode: (mode: AuthMode) => void;
   onLoginSuccess: (user: User) => void;
   selectedRole: UserRole;
+  setSelectedRole: (role: UserRole) => void;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onLoginSuccess, selectedRole }) => {
+const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onLoginSuccess, selectedRole, setSelectedRole }) => {
   const [registrationType, setRegistrationType] = useState<'patient' | 'doctor'>(
     selectedRole === UserRole.DOCTOR ? 'doctor' : 'patient'
   );
@@ -369,7 +370,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setAuthMode, onLoginSuccess
             <p className="text-sm text-gray-600 dark:text-dark-subtext">
                 Already have an account?{' '}
                 <button
-                    onClick={() => setAuthMode(AuthMode.LOGIN)}
+                    onClick={() => {
+                        setSelectedRole(registrationType === 'doctor' ? UserRole.DOCTOR : UserRole.PATIENT);
+                        setAuthMode(AuthMode.LOGIN);
+                    }}
                     className="font-medium text-primary-green dark:text-dark-accent hover:underline focus:outline-none"
                 >
                     Login here

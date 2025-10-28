@@ -8,10 +8,11 @@ interface LoginFormProps {
   setAuthMode: (mode: AuthMode) => void;
   onLoginSuccess: (user: User) => void;
   setSelectedRole: (role: UserRole) => void;
+  selectedRole: UserRole;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess, setSelectedRole }) => {
-  const [role, setRole] = useState<UserRole>(UserRole.PATIENT);
+const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess, setSelectedRole, selectedRole }) => {
+  const [role, setRole] = useState<UserRole>(selectedRole);
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

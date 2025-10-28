@@ -17,12 +17,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ authMode, setAuthMode, onLoginSucce
   const renderForm = () => {
     switch (authMode) {
       case AuthMode.REGISTER:
-        return <RegisterForm setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} selectedRole={selectedRole} />;
+        return <RegisterForm setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />;
       case AuthMode.FORGOT_PASSWORD:
         return <ForgotPasswordForm setAuthMode={setAuthMode} />;
       case AuthMode.LOGIN:
       default:
-        return <LoginForm setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} setSelectedRole={setSelectedRole} />;
+        return <LoginForm setAuthMode={setAuthMode} onLoginSuccess={onLoginSuccess} setSelectedRole={setSelectedRole} selectedRole={selectedRole} />;
     }
   };
 
