@@ -9,15 +9,21 @@ import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
 import AdminLogin from './pages/AdminLogin';
+import AdminForgotPassword from './pages/AdminForgotPassword';
 
 const App: React.FC = () => {
     const [isSplashing, setIsSplashing] = useState(true);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [view, setView] = useState<AppView>(() => {
-        // Check if URL contains admin-portal path
-        if (typeof window !== 'undefined' && window.location.pathname === '/admin-portal') {
-            return 'admin-portal';
+        // Check if URL contains admin paths
+        if (typeof window !== 'undefined') {
+            if (window.location.pathname === '/admin-portal') {
+                return 'admin-portal';
+            }
+            if (window.location.pathname === '/admin-forgot-password') {
+                return 'admin-forgot-password';
+            }
         }
         return 'auth';
     });
@@ -159,14 +165,16 @@ const App: React.FC = () => {
                 return <ContactPage />;
             case 'admin-portal':
                 return <AdminLogin onLoginSuccess={handleLoginSuccess} theme={theme as 'light' | 'dark'} toggleTheme={toggleTheme} />;
+            case 'admin-forgot-password':
+                return <AdminForgotPassword />;
             case 'auth':
             default:
                 return <HomePage authMode={authMode} setAuthMode={setAuthMode} onLoginSuccess={handleLoginSuccess} theme={theme as 'light' | 'dark'} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />;
         }
     };
     
-    // If viewing admin portal, render without header/footer
-    if (view === 'admin-portal') {
+    // If viewing admin portal or admin forgot password, render without header/footer
+    if (view === 'admin-portal' || view === 'admin-forgot-password') {
         return renderPublicView();
     }
 

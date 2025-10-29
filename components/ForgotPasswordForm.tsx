@@ -4,9 +4,10 @@ import { getUserById, updateUser, requestPasswordResetOtp, resetPasswordWithOtp 
 
 interface ForgotPasswordFormProps {
   setAuthMode: (mode: AuthMode) => void;
+  setSelectedRole?: (role: UserRole) => void;
 }
 
-const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ setAuthMode }) => {
+const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ setAuthMode, setSelectedRole }) => {
   const [role, setRole] = useState<UserRole>(UserRole.PATIENT);
   const [step, setStep] = useState(1);
   const [identifier, setIdentifier] = useState(''); // Can be Health ID or Email
@@ -65,6 +66,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ setAuthMode }) 
         try {
             await updateUser(user.healthId, { password: newPassword });
             alert("Password has been reset successfully. Please log in.");
+            if (setSelectedRole) setSelectedRole(UserRole.PATIENT);
             setAuthMode(AuthMode.LOGIN);
         } catch(err) {
             setError(err instanceof Error ? err.message : "An error occurred updating your password.");
@@ -107,7 +109,16 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ setAuthMode }) 
     try {
         await resetPasswordWithOtp(identifier.trim(), otp, newPassword);
         alert("Password has been reset successfully. Please log in.");
-        setAuthMode(AuthMode.LOGIN);
+        
+        // Navigate based on role
+        if (role === UserRole.ADMIN) {
+            // Redirect to admin portal
+            window.location.href = '/admin-portal';
+        } else {
+            // For Doctor, set the role and go to main login
+            if (setSelectedRole) setSelectedRole(role);
+            setAuthMode(AuthMode.LOGIN);
+        }
     } catch(err) {
         setError(err instanceof Error ? err.message : "Invalid OTP or an error occurred.");
     } finally {

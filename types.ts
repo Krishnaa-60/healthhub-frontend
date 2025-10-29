@@ -10,7 +10,7 @@ export enum AuthMode {
   FORGOT_PASSWORD = 'forgotPassword',
 }
 
-export type AppView = 'auth' | 'contact' | 'about' | 'admin-portal';
+export type AppView = 'auth' | 'contact' | 'about' | 'admin-portal' | 'admin-forgot-password';
 
 export interface MedicalRecordFile {
   name: string;
