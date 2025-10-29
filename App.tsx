@@ -8,12 +8,19 @@ import ContactPage from './pages/ContactPage';
 import AdminDashboard from './pages/AdminDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
+import AdminLogin from './pages/AdminLogin';
 
 const App: React.FC = () => {
     const [isSplashing, setIsSplashing] = useState(true);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [view, setView] = useState<AppView>('auth');
+    const [view, setView] = useState<AppView>(() => {
+        // Check if URL contains admin-portal path
+        if (typeof window !== 'undefined' && window.location.pathname === '/admin-portal') {
+            return 'admin-portal';
+        }
+        return 'auth';
+    });
     const [authMode, setAuthMode] = useState<AuthMode>(AuthMode.LOGIN);
     const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.PATIENT);
     const [theme, setTheme] = useState(() => {
@@ -150,12 +157,19 @@ const App: React.FC = () => {
                 return <AboutPage />;
             case 'contact':
                 return <ContactPage />;
+            case 'admin-portal':
+                return <AdminLogin onLoginSuccess={handleLoginSuccess} theme={theme as 'light' | 'dark'} toggleTheme={toggleTheme} />;
             case 'auth':
             default:
                 return <HomePage authMode={authMode} setAuthMode={setAuthMode} onLoginSuccess={handleLoginSuccess} theme={theme as 'light' | 'dark'} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />;
         }
     };
     
+    // If viewing admin portal, render without header/footer
+    if (view === 'admin-portal') {
+        return renderPublicView();
+    }
+
     return (
         <div className="bg-light-gray-bg dark:bg-dark-bg min-h-screen flex flex-col">
             <Header setAuthMode={setAuthMode} setView={setView} theme={theme} toggleTheme={toggleTheme} />

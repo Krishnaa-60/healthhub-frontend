@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UserRole, AuthMode, User } from '../types';
 import UserAvatarIcon from './icons/UserAvatarIcon';
 import EyeIcon from './icons/EyeIcon';
-import { authenticateUser, authenticateAdmin } from '../services/db';
+import { authenticateUser } from '../services/db';
 
 interface LoginFormProps {
   setAuthMode: (mode: AuthMode) => void;
@@ -25,16 +25,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess, setS
     setIsLoading(true);
 
     try {
-      let user: User;
-      if (role === UserRole.ADMIN) {
-        user = await authenticateAdmin(userId.trim(), password);
-      } else {
-        // Patients and Doctors use the same authentication function
-        user = await authenticateUser(userId.trim(), password);
-        // But we must verify the role matches
-        if (user.role !== role) {
-            throw new Error(`You are not registered as a ${role}.`);
-        }
+      // Patients and Doctors use the same authentication function
+      const user = await authenticateUser(userId.trim(), password);
+      // Verify the role matches
+      if (user.role !== role) {
+          throw new Error(`You are not registered as a ${role}.`);
       }
       onLoginSuccess(user);
     } catch (err) {
@@ -44,7 +39,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess, setS
     }
   };
 
-  const isEmailLogin = role === UserRole.ADMIN || role === UserRole.DOCTOR;
+  const isEmailLogin = role === UserRole.DOCTOR;
 
   // FIX: Switched to React.FC to explicitly define a component with children, resolving a TypeScript error.
   const RoleButton: React.FC<{ value: UserRole, children: React.ReactNode }> = ({ value, children }) => (
@@ -71,10 +66,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ setAuthMode, onLoginSuccess, setS
     <div>
       <h2 className="text-2xl sm:text-3xl font-bold text-center text-primary-green dark:text-dark-accent mb-4 sm:mb-6">Login</h2>
       
-      <div className="bg-role-switcher-bg dark:bg-dark-bg rounded-lg p-1 grid grid-cols-3 gap-1 mb-4 sm:mb-6">
+      <div className="bg-role-switcher-bg dark:bg-dark-bg rounded-lg p-1 grid grid-cols-2 gap-1 mb-4 sm:mb-6">
         <RoleButton value={UserRole.PATIENT}>Patient</RoleButton>
         <RoleButton value={UserRole.DOCTOR}>Doctor</RoleButton>
-        <RoleButton value={UserRole.ADMIN}>Admin</RoleButton>
       </div>
 
       <div className="flex justify-center mb-4 sm:mb-6">
