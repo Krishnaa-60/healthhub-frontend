@@ -5,10 +5,11 @@ import { getUserById, updateUser, requestPasswordResetOtp, resetPasswordWithOtp 
 interface ForgotPasswordFormProps {
   setAuthMode: (mode: AuthMode) => void;
   setSelectedRole?: (role: UserRole) => void;
+  selectedRole?: UserRole;
 }
 
-const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ setAuthMode, setSelectedRole }) => {
-  const [role, setRole] = useState<UserRole>(UserRole.PATIENT);
+const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ setAuthMode, setSelectedRole, selectedRole }) => {
+  const [role, setRole] = useState<UserRole>(selectedRole || UserRole.PATIENT);
   const [step, setStep] = useState(1);
   const [identifier, setIdentifier] = useState(''); // Can be Health ID or Email
   const [user, setUser] = useState<User | null>(null);
@@ -231,10 +232,9 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ setAuthMode, se
     <div>
       <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-dark-text mb-6">Reset Your Password</h2>
 
-      <div className="bg-role-switcher-bg dark:bg-dark-bg rounded-lg p-1 grid grid-cols-3 gap-1 mb-6">
+      <div className="bg-role-switcher-bg dark:bg-dark-bg rounded-lg p-1 grid grid-cols-2 gap-1 mb-6">
         <RoleButton value={UserRole.PATIENT}>Patient</RoleButton>
         <RoleButton value={UserRole.DOCTOR}>Doctor</RoleButton>
-        <RoleButton value={UserRole.ADMIN}>Admin</RoleButton>
       </div>
 
       {error && <p className="text-red-500 dark:text-red-400 text-sm text-center mb-4">{error}</p>}

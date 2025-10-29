@@ -12,7 +12,14 @@ import AdminLogin from './pages/AdminLogin';
 import AdminForgotPassword from './pages/AdminForgotPassword';
 
 const App: React.FC = () => {
-    const [isSplashing, setIsSplashing] = useState(true);
+    const [isSplashing, setIsSplashing] = useState(() => {
+        // Only show splash screen once per session
+        if (typeof window !== 'undefined') {
+            const splashShown = sessionStorage.getItem('splashShown');
+            return !splashShown;
+        }
+        return true;
+    });
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [view, setView] = useState<AppView>(() => {
@@ -40,7 +47,9 @@ const App: React.FC = () => {
     // Effect for splash screen
     useEffect(() => {
         const hideTimer = setTimeout(() => {
-            setIsSplashing(false); 
+            setIsSplashing(false);
+            // Mark splash as shown in session
+            sessionStorage.setItem('splashShown', 'true');
         }, 1500); // Match animation duration
 
         return () => {

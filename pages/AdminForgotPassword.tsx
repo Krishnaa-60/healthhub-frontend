@@ -242,9 +242,12 @@ const AdminForgotPassword = () => {
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-dark-subtext/20 text-center">
               <p className="text-sm text-gray-600 dark:text-dark-subtext">
                 Remember your password?{' '}
-                <a href="/admin-portal" className="font-medium text-primary-green dark:text-dark-accent hover:underline">
+                <button
+                  onClick={() => window.location.href = '/admin-portal'}
+                  className="font-medium text-primary-green dark:text-dark-accent hover:underline"
+                >
                   Back to Admin Login
-                </a>
+                </button>
               </p>
             </div>
           </div>

@@ -142,12 +142,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, theme, toggleTh
 
               {/* Forgot Password Link */}
               <div className="flex items-center justify-end">
-                <a
-                  href="/admin-forgot-password"
+                <button
+                  type="button"
+                  onClick={() => window.location.href = '/admin-forgot-password'}
                   className="text-sm font-medium text-primary-green dark:text-dark-accent hover:underline focus:outline-none"
                 >
                   Forgot Password?
-                </a>
+                </button>
               </div>
 
               {/* Login Button */}
