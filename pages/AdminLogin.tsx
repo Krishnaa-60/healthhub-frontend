@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { User } from '../types';
 import UserAvatarIcon from '../components/icons/UserAvatarIcon';
 import EyeIcon from '../components/icons/EyeIcon';
+import Illustration from '../components/icons/Illustration';
 import { authenticateAdmin } from '../services/db';
 
 interface AdminLoginProps {
@@ -34,13 +35,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, theme, toggleTh
 
   return (
     <div className="min-h-screen bg-light-gray-bg dark:bg-dark-bg flex flex-col">
-      {/* Header with Theme Toggle */}
+      {/* Simplified Header - Logo and Theme Toggle Only */}
       <header className="w-full bg-white dark:bg-dark-card shadow-sm border-b border-gray-200 dark:border-dark-subtext/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <img src="/assets/toplogo.png" alt="Healthhub Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
             <h1 className="text-xl sm:text-2xl font-bold text-primary-green dark:text-dark-accent">
-              Healthhub
+              Health Hub
             </h1>
           </div>
           <button
@@ -61,31 +62,37 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, theme, toggleTh
         </div>
       </header>
 
-      {/* Admin Login Form */}
-      <div className="flex-grow flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6 sm:p-8">
-            {/* Title */}
-            <h2 className="text-2xl sm:text-3xl font-bold text-center text-primary-green dark:text-dark-accent mb-2">
-              Admin Portal
-            </h2>
-            <p className="text-center text-sm text-gray-600 dark:text-dark-subtext mb-6">
-              Secure Administrator Access
-            </p>
+      {/* Main Content - Split Layout */}
+      <main className="container mx-auto flex-grow flex items-center justify-center p-3 sm:p-4 md:p-6">
+        <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
+          {/* Left Side - Illustration */}
+          <div className="hidden md:flex justify-center">
+            <Illustration className="w-full max-w-lg h-auto" theme={theme} />
+          </div>
 
-            {/* Avatar Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="p-4 bg-primary-green/10 dark:bg-dark-accent/10 rounded-full">
-                <UserAvatarIcon className="w-16 h-16 sm:w-20 sm:h-20" />
-              </div>
-            </div>
+          {/* Right Side - Admin Login Form */}
+          <div className="flex justify-center md:justify-end">
+            <div className="w-full max-w-md px-4">
+              <div className="bg-white dark:bg-dark-card rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 border border-gray-200 dark:border-dark-subtext/20">
+                {/* Title */}
+                <h2 className="text-2xl sm:text-3xl font-bold text-center text-primary-green dark:text-dark-accent mb-2">
+                  Login
+                </h2>
+                <p className="text-center text-sm text-gray-600 dark:text-dark-subtext mb-4">
+                  Administrator Portal
+                </p>
 
-            {/* Login Form */}
-            <form onSubmit={handleLogin} className="space-y-5">
+                {/* Avatar Icon */}
+                <div className="flex justify-center mb-4 sm:mb-6">
+                  <UserAvatarIcon className="w-20 h-20 sm:w-24 sm:h-24" />
+                </div>
+
+                {/* Login Form */}
+                <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-bold text-gray-700 dark:text-dark-subtext mb-2">
-                  Admin Email
+                <label htmlFor="email" className="block text-xs sm:text-sm font-bold text-gray-700 dark:text-dark-subtext mb-1">
+                  Email
                 </label>
                 <input
                   id="email"
@@ -96,15 +103,16 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, theme, toggleTh
                     setError('');
                   }}
                   required
-                  className="block w-full px-4 py-3 text-base bg-login-input-bg dark:bg-dark-bg border-0 dark:border dark:border-dark-subtext/30 rounded-lg placeholder-gray-500 dark:placeholder-dark-placeholder focus:outline-none focus:ring-2 focus:ring-primary-green dark:focus:ring-dark-accent text-gray-900 dark:text-dark-text"
+                  className="block w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-login-input-bg dark:bg-dark-bg border-0 dark:border dark:border-dark-subtext/30 rounded-lg placeholder-gray-500 dark:placeholder-dark-placeholder focus:outline-none focus:ring-2 focus:ring-primary-green dark:focus:ring-dark-accent text-gray-900 dark:text-dark-text"
+                  placeholder="Your Email Address"
                   disabled={isLoading}
-                  placeholder="admin@healthhub.com"
                 />
+                {error && <p className="text-red-500 dark:text-red-400 text-xs mt-1 ml-1">{error}</p>}
               </div>
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-bold text-gray-700 dark:text-dark-subtext mb-2">
+                <label htmlFor="password" className="block text-xs sm:text-sm font-bold text-gray-700 dark:text-dark-subtext mb-1">
                   Password
                 </label>
                 <div className="relative">
@@ -117,28 +125,21 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, theme, toggleTh
                       setError('');
                     }}
                     required
-                    className="block w-full px-4 py-3 text-base bg-login-input-bg dark:bg-dark-bg border-0 dark:border dark:border-dark-subtext/30 rounded-lg placeholder-gray-500 dark:placeholder-dark-placeholder focus:outline-none focus:ring-2 focus:ring-primary-green dark:focus:ring-dark-accent text-gray-900 dark:text-dark-text"
+                    className="block w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-login-input-bg dark:bg-dark-bg border-0 dark:border dark:border-dark-subtext/30 rounded-lg placeholder-gray-500 dark:placeholder-dark-placeholder focus:outline-none focus:ring-2 focus:ring-primary-green dark:focus:ring-dark-accent text-gray-900 dark:text-dark-text"
+                    placeholder="Your Password"
                     disabled={isLoading}
-                    placeholder="Enter your password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 dark:text-dark-subtext hover:text-gray-700 dark:hover:text-dark-text"
+                    className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-500 dark:text-dark-subtext hover:text-gray-700 dark:hover:text-dark-text"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     disabled={isLoading}
                   >
-                    <EyeIcon className="h-5 w-5" />
+                    <EyeIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
                 </div>
               </div>
-
-              {/* Error Message */}
-              {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-                  <p className="text-red-600 dark:text-red-400 text-sm text-center">{error}</p>
-                </div>
-              )}
 
               {/* Forgot Password Link */}
               <div className="flex items-center justify-end">
@@ -152,23 +153,25 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, theme, toggleTh
               </div>
 
               {/* Login Button */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white dark:text-dark-bg bg-primary-green dark:bg-dark-accent hover:bg-primary-green-dark dark:hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-green dark:focus:ring-dark-accent disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Authenticating...
-                  </>
-                ) : (
-                  'Sign In as Administrator'
-                )}
-              </button>
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex justify-center py-2.5 sm:py-3 px-4 border border-transparent rounded-md shadow-sm text-sm sm:text-base font-medium text-white dark:text-dark-bg bg-primary-green dark:bg-dark-accent hover:bg-primary-green-dark dark:hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-green dark:focus:ring-dark-accent disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Logging in...
+                    </>
+                  ) : (
+                    'Login'
+                  )}
+                </button>
+              </div>
             </form>
 
             {/* Security Notice */}
@@ -179,7 +182,9 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, theme, toggleTh
             </div>
           </div>
         </div>
-      </div>
+          </div>
+        </div>
+      </main>
 
       {/* Footer */}
       <footer className="w-full bg-white dark:bg-dark-card p-2 text-center text-sm text-gray-800 dark:text-dark-text font-semibold border-t border-gray-200 dark:border-dark-subtext/20">
